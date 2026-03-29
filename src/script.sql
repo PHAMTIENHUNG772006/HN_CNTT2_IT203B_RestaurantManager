@@ -18,14 +18,13 @@ CREATE TABLE IF NOT EXISTS Menu_items (
     food_name VARCHAR(255) NOT NULL,
     price DECIMAL(15,2) NOT NULL CHECK (price > 0),
     category ENUM('FOOD','DRINK'),
-    stock INT NOT NULL CHECK (stock >= 0),
-    status ENUM('PENDING', 'COOKING', 'READY','SERVED') DEFAULT 'PENDING'
+    stock INT NOT NULL CHECK (stock >= 0)
     );
 
 CREATE TABLE IF NOT EXISTS Tables (
     table_id INT PRIMARY KEY AUTO_INCREMENT,
     number_seats INT NOT NULL CHECK (number_seats >= 0),
-    status ENUM('EMPTY','OCCUPIED')
+    status ENUM('EMPTY','OCCUPIED','RESERVED')
     );
 
 -- bảng orders
@@ -47,6 +46,7 @@ CREATE TABLE IF NOT EXISTS Order_Details (
    food_id INT NOT NULL,
    quantity INT CHECK (quantity >= 0),
    unit_price DECIMAL(15,2) NOT NULL CHECK (unit_price >= 0),
+   status ENUM('PENDING', 'COOKING', 'READY','SERVED') DEFAULT 'PENDING',
    FOREIGN KEY (food_id) REFERENCES Menu_items(food_id),
    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
     );

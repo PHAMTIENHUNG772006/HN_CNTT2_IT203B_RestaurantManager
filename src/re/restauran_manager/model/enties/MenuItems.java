@@ -1,11 +1,8 @@
 package re.restauran_manager.model.enties;
+
 import re.restauran_manager.model.enums.Category;
-import re.restauran_manager.model.enums.FoodEnum;
 import re.restauran_manager.utils.ColorConstants;
 import re.restauran_manager.utils.InputMethod;
-
-import java.util.List;
-import java.util.Scanner;
 
 public class MenuItems {
     private int food_id;
@@ -13,19 +10,16 @@ public class MenuItems {
     private double price;
     private int stock;
     private Category category;
-    private FoodEnum status;
-
 
     public MenuItems() {
     }
 
-    public MenuItems(int food_id, String food_name, double price, int stock, Category category, FoodEnum status) {
+    public MenuItems(int food_id, String food_name, double price, int stock, Category category) {
         this.food_id = food_id;
         this.food_name = food_name;
         this.price = price;
         this.stock = stock;
         this.category = category;
-        this.status = status;
     }
 
     public int getFood_id() {
@@ -68,20 +62,28 @@ public class MenuItems {
         this.category = category;
     }
 
-    public FoodEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(FoodEnum status) {
-        this.status = status;
-    }
-
     public static MenuItems inputData() {
         MenuItems item = new MenuItems();
 
         item.setFood_name(InputMethod.getInputString("Nhập tên món ăn: "));
-        item.setPrice(InputMethod.getInputDouble("Nhập giá món ăn: "));
-        item.setStock(InputMethod.getInputInt("Nhập số lượng tồn kho: "));
+
+        while (true) {
+            double price = InputMethod.getInputDouble("Nhập giá món ăn: ");
+            if (price > 0) {
+                item.setPrice(price);
+                break;
+            }
+            System.out.println(ColorConstants.ERROR + "Giá món ăn phải lớn hơn 0!" + ColorConstants.RESET);
+        }
+
+        while (true) {
+            int stock = InputMethod.getInputInt("Nhập số lượng tồn kho: ");
+            if (stock >= 0) {
+                item.setStock(stock);
+                break;
+            }
+            System.out.println(ColorConstants.ERROR + "Số lượng không được là số âm!" + ColorConstants.RESET);
+        }
 
         System.out.println("Chọn danh mục:");
         System.out.println("1. FOOD");
@@ -96,27 +98,25 @@ public class MenuItems {
                 item.setCategory(Category.DRINK);
                 break;
             }
-            System.out.print(ColorConstants.ERROR + "Lựa chọn không hợp lệ (1 hoặc 2): " + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Lựa chọn không hợp lệ (Chỉ chọn 1 hoặc 2)!" + ColorConstants.RESET);
         }
-
-        item.setStatus(FoodEnum.PENDING);
 
         return item;
     }
 
     public static void getHeader() {
-        System.out.println("╔══════╦══════════════════════╦══════════════╦══════════╦══════════════╦════════════╗");
-        System.out.printf("║ %-4s ║ %-20s ║ %-12s ║ %-8s ║ %-12s ║ %-10s ║\n",
-                "ID", "Tên món", "Giá", "SL", "Danh mục", "Trạng thái");
-        System.out.println("╠══════╬══════════════════════╬══════════════╬══════════╬══════════════╬════════════╣");
+        System.out.println("╔══════╦══════════════════════╦══════════════╦══════════╦══════════════╗");
+        System.out.printf("║ %-4s ║ %-20s ║ %-12s ║ %-8s ║ %-12s ║\n",
+                "ID", "Tên món", "Giá", "SL", "Danh mục");
+        System.out.println("╠══════╬══════════════════════╬══════════════╬══════════╬══════════════╣");
     }
 
     public void displayData() {
-        System.out.printf("║ %-4d ║ %-20s ║ %,12.0f ║ %-8d ║ %-12s ║ %-10s ║\n",
-                this.food_id, this.food_name, this.price, this.stock, this.category, this.status);
+        System.out.printf("║ %-4d ║ %-20s ║ %,12.0f ║ %-8d ║ %-12s ║\n",
+                this.food_id, this.food_name, this.price, this.stock, this.category);
     }
 
     public static void getFooter() {
-        System.out.println("╚══════╩══════════════════════╩══════════════╩══════════╩══════════════╩════════════╝");
+        System.out.println("╚══════╩══════════════════════╩══════════════╩══════════╩══════════════╝");
     }
 }

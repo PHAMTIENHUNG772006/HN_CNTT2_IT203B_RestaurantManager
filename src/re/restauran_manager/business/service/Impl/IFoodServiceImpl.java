@@ -49,8 +49,7 @@ public class IFoodServiceImpl implements IFoodService {
             System.out.println(ColorConstants.ERROR + "Số lượng tồn kho không được âm." + ColorConstants.RESET);
             return false;
         }
-        if (foodDao.findByName(name) == null) {
-            System.out.println(ColorConstants.ERROR + "Không tìm thấy món ăn." + ColorConstants.RESET);
+        if (foodDao.findByName(name.trim()) == null) {
             return false;
         }
         return foodDao.updatestock(name, stock);
@@ -62,8 +61,7 @@ public class IFoodServiceImpl implements IFoodService {
             System.out.println(ColorConstants.ERROR + "Số lượng tồn kho không được âm." + ColorConstants.RESET);
             return false;
         }
-        if (foodDao.findByName(name) == null) {
-            System.out.println(ColorConstants.ERROR + "Không tìm thấy món ăn." + ColorConstants.RESET);
+        if (foodDao.findByName(name.trim()) == null) {
             return false;
         }
         return foodDao.updatePrice(name, price);

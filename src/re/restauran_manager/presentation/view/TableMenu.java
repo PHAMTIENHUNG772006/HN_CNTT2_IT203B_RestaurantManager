@@ -48,28 +48,35 @@ public class TableMenu {
                     System.out.println("|  2. Cập nhật trạng thái(Status)           |");
                     System.out.println("|  0. Quay lại                              |");
                     System.out.println("+-------------------------------------------+");
-                    boolean isUpdate = false;
+
                     int updateChoice = InputMethod.getInputInt("Lựa chọn của bạn: ");
 
                     if (updateChoice == 1) {
                         int id = InputMethod.getInputInt("Nhập ID bàn cần tìm: ");
-                        int numberSeat = InputMethod.getInputInt("Nhập số lượng ghế cần cập nhật : ");
-                        isUpdate = tableService.updateSeat(id,numberSeat);
-                        if (isUpdate){
-                            System.out.println(ColorConstants.SUCCESS + "Cập nhật bàn thành công!" + ColorConstants.RESET);
+
+                        int numberSeat;
+                        while (true) {
+                            numberSeat = InputMethod.getInputInt("Nhập số lượng ghế cần cập nhật : ");
+                            if (numberSeat > 0) {
+                                break;
+                            }
+                            System.out.println(ColorConstants.ERROR + "Số lượng ghế phải lớn hơn 0. Vui lòng nhập lại!" + ColorConstants.RESET);
                         }
+
+                        if (tableService.updateSeat(id, numberSeat)) {
+                            System.out.println(ColorConstants.SUCCESS + "Cập nhật số ghế thành công!" + ColorConstants.RESET);
+                        }
+
                     } else if (updateChoice == 2) {
                         int id = InputMethod.getInputInt("Nhập ID bàn cần tìm: ");
-                        System.out.println("Chọn trạng thái mới: 1. EMMPTY, 2. OCCUPIED");
+                        System.out.println("Chọn trạng thái mới: 1. EMPTY, 2. OCCUPIED");
                         int statusSelect = InputMethod.getInputInt("Nhập lựa chọn: ");
 
-                        isUpdate = tableService.updateStatus(id, statusSelect);
-                        if (isUpdate){
-                            System.out.println(ColorConstants.SUCCESS + "Cập nhật bàn thành công!" + ColorConstants.RESET);
+                        if (tableService.updateStatus(id, statusSelect)) {
+                            System.out.println(ColorConstants.SUCCESS + "Cập nhật trạng thái thành công!" + ColorConstants.RESET);
                         }
                     } else if (updateChoice == 0) {
-                        System.out.println("Đã ra menu ngoài..");
-                        break;
+                        System.out.println("Quay lại menu quản lý...");
                     } else {
                         System.out.println(ColorConstants.WARNING + "Lựa chọn không hợp lệ!" + ColorConstants.RESET);
                     }
@@ -88,8 +95,13 @@ public class TableMenu {
                     int findTable = InputMethod.getInputInt("Nhập ID cần tìm: ");
 
                     Table table = tableService.findById(findTable);
-                    System.out.println("Bàn được tìm thấy : ");
-                    table.displayData();
+
+                    if (table == null) {
+                        System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn có ID: " + findTable + ColorConstants.RESET);
+                    } else {
+                        System.out.println(ColorConstants.SUCCESS + "Bàn được tìm thấy: " + ColorConstants.RESET);
+                        table.displayData();
+                    }
                     break;
                 case 6:
                     System.out.println("Đã ra menu ngoài");

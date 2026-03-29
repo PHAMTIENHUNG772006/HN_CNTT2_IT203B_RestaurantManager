@@ -6,7 +6,11 @@ import re.restauran_manager.model.enties.MenuItems;
 import re.restauran_manager.model.enties.Table;
 import re.restauran_manager.model.enums.TableStatus;
 import re.restauran_manager.utils.ColorConstants;
+import re.restauran_manager.utils.DB_Connection;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ITableServiceImpl implements ITableService {
@@ -69,7 +73,7 @@ public class ITableServiceImpl implements ITableService {
 
         TableStatus status;
         if (choice == 1) {
-            status = TableStatus.EMPTY;
+            status = TableStatus.FREE;
         } else if (choice == 2) {
             status = TableStatus.OCCUPIED;
         } else {
@@ -100,5 +104,10 @@ public class ITableServiceImpl implements ITableService {
     public Table findById(int id) {
         if (id <= 0) return null;
         return tableDao.findById(id);
+    }
+
+    @Override
+    public Table findByStatus(TableStatus status) {
+       return null;
     }
 }

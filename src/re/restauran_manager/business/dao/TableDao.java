@@ -44,6 +44,26 @@ public class TableDao {
     }
 
 
+    public List<Table> findByStatus(TableStatus status) {
+        String sql = "SELECT table_id, number_seats, status FROM Tables WHERE status = ?";
+
+        List<Table> tables = new ArrayList<>();
+        try (Connection conn = DB_Connection.openConnection();
+             PreparedStatement pre = conn.prepareStatement(sql)) {
+
+            pre.setString(1, status.name());
+
+            ResultSet rs = pre.executeQuery();
+            while (rs.next()) {
+                tables.add(mapResultSetToTable(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println(ColorConstants.ERROR + "Lỗi khi tìm theo tên: " + e.getMessage() + ColorConstants.RESET);
+        }
+        return tables;
+    }
+
+
 
     public boolean insertTable(Table table) {
         if (table == null) {

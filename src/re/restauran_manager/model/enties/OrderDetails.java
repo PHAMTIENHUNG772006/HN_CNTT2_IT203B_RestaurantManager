@@ -1,70 +1,56 @@
 package re.restauran_manager.model.enties;
 
+import re.restauran_manager.model.enums.OrderStatus;
+
 public class OrderDetails {
     private int id;
     private int orderId;
     private int itemId;
     private int quantity;
     private double price;
+    private OrderStatus status;
 
     public OrderDetails() {}
 
-    public OrderDetails(int id, int orderId, int itemId, int quantity, double price) {
+    public OrderDetails(int id, int orderId, int itemId, int quantity, double price, OrderStatus status) {
         this.id = id;
         this.orderId = orderId;
         this.itemId = itemId;
         this.quantity = quantity;
         this.price = price;
+        this.status = status;
     }
 
-    public int getId() {
-        return id;
+
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
-    public int getOrderId() {
-        return orderId;
-    }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public int getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getOrderId() { return orderId; }
+    public void setOrderId(int orderId) { this.orderId = orderId; }
+    public int getItemId() { return itemId; }
+    public void setItemId(int itemId) { this.itemId = itemId; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
     public static void getHeader() {
-        System.out.println("-----------------------------------------------------------------------");
-        System.out.printf("| %-5s | %-10s | %-10s | %-8s | %-15s |\n",
-                "ID", "Order ID", "Item ID", "Qty", "Price (VND)");
-        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------");
+        System.out.printf("| %-5s | %-10s | %-10s | %-8s | %-15s | %-12s |\n",
+                "ID", "Order ID", "Item ID", "Qty", "Price (VND)", "Status");
+        System.out.println("------------------------------------------------------------------------------------------");
     }
 
     public void displayData() {
-        System.out.printf("| %-5d | %-10d | %-10d | %-8d | %,15.2f |\n", this.id, this.orderId, this.itemId, this.quantity, this.price);
+        System.out.printf("| %-5d | %-10d | %-10d | %-8d | %,15.2f | %-12s |\n",
+                this.id, this.orderId, this.itemId, this.quantity, this.price, this.status);
     }
 }

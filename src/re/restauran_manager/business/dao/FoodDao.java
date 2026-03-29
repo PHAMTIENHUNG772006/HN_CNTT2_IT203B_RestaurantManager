@@ -33,7 +33,7 @@ public class FoodDao {
     }
 
     public MenuItems findByName(String name) {
-        String sql = "SELECT food_id, food_name, price, category, stock,status  FROM menu_items WHERE food_name = ?";
+        String sql = "SELECT food_id, food_name, price, category, stock FROM menu_items WHERE food_name = ?";
 
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pre = conn.prepareStatement(sql)) {
@@ -49,7 +49,7 @@ public class FoodDao {
     }
 
     public MenuItems findById(int id) {
-        String sql = "SELECT food_id, food_name, price, category, stock,status  FROM menu_items WHERE food_id = ?";
+        String sql = "SELECT food_id, food_name, price, category, stock  FROM menu_items WHERE food_id = ?";
 
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pre = conn.prepareStatement(sql)) {
@@ -70,7 +70,7 @@ public class FoodDao {
             return false;
         }
 
-        String sql = "INSERT INTO Menu_items (food_name, price, category, stock, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Menu_items (food_name, price, category, stock) VALUES (?, ?, ?, ?)";
 
         try (
                 Connection conn = DB_Connection.openConnection();
@@ -80,7 +80,6 @@ public class FoodDao {
             pstmt.setDouble(2, item.getPrice());
             pstmt.setString(3, item.getCategory().name());
             pstmt.setInt(4, item.getStock());
-            pstmt.setString(5, item.getStatus().name());
 
             int rowAffected = pstmt.executeUpdate();
             return rowAffected > 0;
@@ -113,12 +112,12 @@ public class FoodDao {
 
     public boolean updatePrice(String name, double price) {
 
-        if (findByName(name) != null) {
+        if (findByName(name) == null) {
             System.out.println(ColorConstants.WARNING + "Món ăn không tồn tại!" + ColorConstants.RESET);
             return false;
         }
 
-        String sql = "UPDATE SET price = ? FROM Menu_Items where food_name = ?";
+        String sql = "UPDATE Menu_Items SET price = ? where food_name = ?";
 
         try (
                 Connection conn = DB_Connection.openConnection();
@@ -137,15 +136,14 @@ public class FoodDao {
     }
 
 
-
     public boolean updatestock(String name, int stock) {
 
-        if (findByName(name) != null) {
+        if (findByName(name) == null) {
             System.out.println(ColorConstants.WARNING + "Món ăn không tồn tại!" + ColorConstants.RESET);
             return false;
         }
 
-        String sql = "UPDATE SET price = ? FROM Menu_Items where stock = ?";
+        String sql = "UPDATE Menu_Items SET stock = ? where food_name = ?";
 
         try (
                 Connection conn = DB_Connection.openConnection();
@@ -162,9 +160,6 @@ public class FoodDao {
             return false;
         }
     }
-
-
-
 
 
     public List<MenuItems> displayAll() {
@@ -202,10 +197,6 @@ public class FoodDao {
 
         menuItems.setStock(rs.getInt("stock"));
 
-        String status = rs.getString("status");
-        if (status != null) {
-            menuItems.setStatus(FoodEnum.valueOf(status.toUpperCase()));
-        }
 
         return menuItems;
     }

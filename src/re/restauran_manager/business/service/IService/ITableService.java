@@ -11,4 +11,5 @@ public interface ITableService {
 
     void displayAll();
     Table findById(int id);
+    Table findByStatus(TableStatus status);
 }

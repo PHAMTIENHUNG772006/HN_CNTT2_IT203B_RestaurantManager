@@ -76,8 +76,10 @@ public class ITableServiceImpl implements ITableService {
             status = TableStatus.FREE;
         } else if (choice == 2) {
             status = TableStatus.OCCUPIED;
+        } else if (choice == 3) {
+        status = TableStatus.RESERVED;
         } else {
-            System.out.println(ColorConstants.ERROR + "Lựa chọn trạng thái không hợp lệ (Chỉ chọn 1 hoặc 2)." + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Lựa chọn trạng thái không hợp lệ (Chỉ chọn 1 - 2 - 3)." + ColorConstants.RESET);
             return false;
         }
 

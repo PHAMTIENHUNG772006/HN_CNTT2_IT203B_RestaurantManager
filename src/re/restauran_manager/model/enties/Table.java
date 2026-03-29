@@ -50,13 +50,6 @@ public class Table {
         System.out.println("╠══════════╬═════════════════╬═════════════════╣");
     }
 
-    public void displayData() {
-        System.out.printf("║ %-8d ║ %-15d ║ %-15s ║\n",
-                this.table_id,
-                this.number_seats,
-                this.status);
-    }
-
     public static void getFooter() {
         System.out.println("╚══════════╩═════════════════╩═════════════════╝");
     }
@@ -75,8 +68,9 @@ public class Table {
         }
 
         System.out.println("Chọn trạng thái bàn:");
-        System.out.println("1. Trống (EMPTY)");
+        System.out.println("1. Trống (FREE)");
         System.out.println("2. Đang có khách (OCCUPIED)");
+        System.out.println("3. Đã đặt trước (RESERVED)"); // Thêm lựa chọn 3
 
         while (true) {
             int statusChoice = InputMethod.getInputInt("Lựa chọn của bạn: ");
@@ -86,11 +80,30 @@ public class Table {
             } else if (statusChoice == 2) {
                 table.setStatus(TableStatus.OCCUPIED);
                 break;
+            } else if (statusChoice == 3) {
+                table.setStatus(TableStatus.RESERVED);
+                break;
             } else {
-                System.out.println(ColorConstants.WARNING + "Vui lòng chỉ chọn 1 hoặc 2!" + ColorConstants.RESET);
+                System.out.println(ColorConstants.WARNING + "Vui lòng chỉ chọn từ 1 đến 3!" + ColorConstants.RESET);
             }
         }
 
         return table;
+    }
+
+    public void displayData() {
+
+        String statusColor;
+        switch (this.status) {
+            case FREE: statusColor = ColorConstants.SUCCESS; break;
+            case OCCUPIED: statusColor = ColorConstants.ERROR; break;
+            case RESERVED: statusColor = ColorConstants.WARNING; break;
+            default: statusColor = ColorConstants.RESET;
+        }
+
+        System.out.printf("║ %-8d ║ %-15d ║ %s%-15s%s ║\n",
+                this.table_id,
+                this.number_seats,
+                statusColor, this.status, ColorConstants.RESET);
     }
 }

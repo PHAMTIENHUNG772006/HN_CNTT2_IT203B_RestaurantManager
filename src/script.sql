@@ -21,10 +21,11 @@ CREATE TABLE IF NOT EXISTS Menu_items (
     stock INT NOT NULL CHECK (stock >= 0)
     );
 
+
 CREATE TABLE IF NOT EXISTS Tables (
     table_id INT PRIMARY KEY AUTO_INCREMENT,
     number_seats INT NOT NULL CHECK (number_seats >= 0),
-    status ENUM('EMPTY','OCCUPIED','RESERVED')
+    status ENUM('FREE','OCCUPIED','RESERVED')
     );
 
 -- bảng orders

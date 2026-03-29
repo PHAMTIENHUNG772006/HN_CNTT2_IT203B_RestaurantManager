@@ -69,7 +69,7 @@ public class TableMenu {
 
                     } else if (updateChoice == 2) {
                         int id = InputMethod.getInputInt("Nhập ID bàn cần tìm: ");
-                        System.out.println("Chọn trạng thái mới: 1. EMPTY, 2. OCCUPIED");
+                        System.out.println("Chọn trạng thái mới: 1. FREE, 2. OCCUPIED,3.  RESERVED");
                         int statusSelect = InputMethod.getInputInt("Nhập lựa chọn: ");
 
                         if (tableService.updateStatus(id, statusSelect)) {

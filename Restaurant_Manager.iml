@@ -10,5 +10,6 @@
     <orderEntry type="library" name="junit-jupiter-api-6.0.3" level="project" />
     <orderEntry type="library" name="junit-platform-console-standalone-6.0.3" level="project" />
     <orderEntry type="library" name="mysql-connector-j-8.0.33" level="project" />
+    <orderEntry type="library" name="jbcrypt-0.4" level="project" />
   </component>
 </module>

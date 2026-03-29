@@ -1,5 +1,5 @@
 package re.restauran_manager.model.enums;
 
-public enum ItemStatus {
+public enum FoodEnum {
     PENDING, COOKING, READY,SERVED
 }

@@ -6,10 +6,9 @@ USE restaurant_manager;
 --  bảng tài khoản
 CREATE TABLE IF NOT EXISTS Account(
     account_id INT AUTO_INCREMENT PRIMARY KEY ,
-    account_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE,
-    password VARCHAR(50) NOT NULL ,
-    status ENUM('ACTIVE', 'BAN') DEFAULT 'ACTIVE',
+    account_name VARCHAR(100) NOT NULL UNIQUE ,
+    password VARCHAR(200) NOT NULL ,
+    isban BOOLEAN,
     role ENUM('CUSTOMER','CHEF','MANAGER')
     );
 

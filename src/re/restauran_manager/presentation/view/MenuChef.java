@@ -1,4 +1,4 @@
-package re.restauran_manager.view;
+package re.restauran_manager.presentation.view;
 
 import java.util.Scanner;
 

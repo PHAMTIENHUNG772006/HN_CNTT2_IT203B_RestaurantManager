@@ -1,10 +1,16 @@
-package re.restauran_manager.view;
+package re.restauran_manager.presentation.view;
+
+import re.restauran_manager.business.dao.FoodDao;
+import re.restauran_manager.business.service.IService.IFoodService;
+import re.restauran_manager.business.service.Impl.IFoodServiceImpl;
+import re.restauran_manager.utils.ColorConstants;
+import re.restauran_manager.utils.InputMethod;
 
 import java.util.Scanner;
 
 public class MenuCustomer {
-    public static void viewMenuCustomer(Scanner sc) {
-
+    public static void viewMenuCustomer() {
+        Scanner sc = new Scanner(System.in);
         int choice = 0;
         do {
             System.out.println("+===========================================+");
@@ -18,8 +24,11 @@ public class MenuCustomer {
             System.out.println("|  6. Thoát                                 |");
             System.out.println("+-------------------------------------------+");
 
+            choice = InputMethod.getInputInt("Nhập lựa chọn : ");
             switch (choice){
                 case 1:
+                    IFoodService foodService = IFoodServiceImpl.getInstance();
+                    foodService.displayAll();
                     break;
                 case 2:
                     break;
@@ -32,6 +41,8 @@ public class MenuCustomer {
                 case 6:
                     System.out.println("Đã ra menu ngoài");
                     break;
+                default:
+                    System.out.println(ColorConstants.WARNING + "Lựa chọn không hợp lệ. Chọn lại" + ColorConstants.RESET);
             }
         }while (choice != 6);
     }

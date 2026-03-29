@@ -1,10 +1,9 @@
 package re.restauran_manager.utils;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import static java.sql.DriverManager.getConnection;
 
 
 public class DB_Connection {
@@ -14,15 +13,16 @@ public class DB_Connection {
     public static final String PASSWORD = "admin123";
 
 
-    public static Connection openConnection(){
-
+    public static Connection openConnection() {
         try {
             Class.forName(DRIVER);
-            return getConnection(URL,USERNAME,PASSWORD);
+            return DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println(ColorConstants.ERROR + "Không tìm thấy Driver: " + e.getMessage() + ColorConstants.RESET);
+            throw new RuntimeException("Lỗi nạp Driver JDBC", e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(ColorConstants.ERROR + "Lỗi kết nối Database: " + e.getMessage() + ColorConstants.RESET);
+            throw new RuntimeException("Lỗi cấu hình URL/User/Pass", e);
         }
     }
 

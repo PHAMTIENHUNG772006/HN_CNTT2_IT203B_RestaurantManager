@@ -57,9 +57,8 @@ public class Table {
     public static Table inputData() {
         Table table = new Table();
 
-        int seats;
         while (true) {
-            seats = InputMethod.getInputInt("Nhập số chỗ ngồi cho bàn: ");
+            int seats = InputMethod.getInputInt("Nhập số chỗ ngồi cho bàn: ");
             if (seats > 0 && seats <= 100) {
                 table.setNumber_seats(seats);
                 break;
@@ -70,35 +69,47 @@ public class Table {
         System.out.println("Chọn trạng thái bàn:");
         System.out.println("1. Trống (FREE)");
         System.out.println("2. Đang có khách (OCCUPIED)");
-        System.out.println("3. Đã đặt trước (RESERVED)"); // Thêm lựa chọn 3
+        System.out.println("3. Đã đặt trước (RESERVED)");
+        System.out.println("4. Bàn hỏng/Sửa chữa (DAMAGED)");
 
         while (true) {
-            int statusChoice = InputMethod.getInputInt("Lựa chọn của bạn: ");
-            if (statusChoice == 1) {
-                table.setStatus(TableStatus.FREE);
-                break;
-            } else if (statusChoice == 2) {
-                table.setStatus(TableStatus.OCCUPIED);
-                break;
-            } else if (statusChoice == 3) {
-                table.setStatus(TableStatus.RESERVED);
-                break;
-            } else {
-                System.out.println(ColorConstants.WARNING + "Vui lòng chỉ chọn từ 1 đến 3!" + ColorConstants.RESET);
+            int choice = InputMethod.getInputInt("Lựa chọn của bạn: ");
+            switch (choice) {
+                case 1:
+                    table.setStatus(TableStatus.FREE);
+                    return table;
+                case 2:
+                    table.setStatus(TableStatus.OCCUPIED);
+                    return table;
+                case 3:
+                    table.setStatus(TableStatus.RESERVED);
+                    return table;
+                case 4:
+                    table.setStatus(TableStatus.DAMAGED);
+                    return table;
+                default:
+                    System.out.println(ColorConstants.WARNING + "Vui lòng chọn từ 1 đến 4!" + ColorConstants.RESET);
             }
         }
-
-        return table;
     }
 
     public void displayData() {
-
         String statusColor;
         switch (this.status) {
-            case FREE: statusColor = ColorConstants.SUCCESS; break;
-            case OCCUPIED: statusColor = ColorConstants.ERROR; break;
-            case RESERVED: statusColor = ColorConstants.WARNING; break;
-            default: statusColor = ColorConstants.RESET;
+            case FREE:
+                statusColor = ColorConstants.SUCCESS;
+                break;
+            case OCCUPIED:
+                statusColor = ColorConstants.ERROR;
+                break;
+            case RESERVED:
+                statusColor = ColorConstants.WARNING;
+                break;
+            case DAMAGED:
+                statusColor = ColorConstants.DISABLED;
+                break;
+            default:
+                statusColor = ColorConstants.RESET;
         }
 
         System.out.printf("║ %-8d ║ %-15d ║ %s%-15s%s ║\n",
@@ -106,4 +117,5 @@ public class Table {
                 this.number_seats,
                 statusColor, this.status, ColorConstants.RESET);
     }
+
 }

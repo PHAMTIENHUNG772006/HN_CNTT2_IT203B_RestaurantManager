@@ -3,6 +3,8 @@ package re.restauran_manager.business.service.IService;
 import re.restauran_manager.model.enties.Table;
 import re.restauran_manager.model.enums.TableStatus;
 
+import java.util.List;
+
 public interface ITableService {
     boolean add(Table item);
     boolean deleteTable(int id);
@@ -11,5 +13,5 @@ public interface ITableService {
 
     void displayAll();
     Table findById(int id);
-    Table findByStatus(TableStatus status);
+    List<Table> findByStatus(TableStatus status);
 }

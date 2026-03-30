@@ -9,5 +9,5 @@ public class ColorConstants {
     public static final String ERROR = "\u001B[31m";
     public static final String SUCCESS = "\u001B[32m";
     public static final String WARNING = "\u001B[33m";
-    public static final String PRIMARY = "\u001B[34m";
+    public static final String DISABLED = "\u001B[37m";
 }

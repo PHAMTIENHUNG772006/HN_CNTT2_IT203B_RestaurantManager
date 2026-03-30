@@ -41,4 +41,18 @@ public class InputMethod {
             }
         }
     }
+
+    public static boolean getInputBoolean(String message) {
+        System.out.print(message + " (y/n hoặc true/false): ");
+        while (true) {
+            String input = sc.nextLine().trim().toLowerCase();
+            if (input.equals("true") || input.equals("t") || input.equals("y") || input.equals("yes")) {
+                return true;
+            } else if (input.equals("false") || input.equals("f") || input.equals("n") || input.equals("no")) {
+                return false;
+            } else {
+                System.out.print(ColorConstants.ERROR + "Nhập sai định dạng (chỉ y/n hoặc true/false). Nhập lại: " + ColorConstants.RESET);
+            }
+        }
+    }
 }

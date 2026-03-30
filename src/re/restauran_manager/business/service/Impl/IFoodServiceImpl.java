@@ -52,7 +52,7 @@ public class IFoodServiceImpl implements IFoodService {
         if (foodDao.findByName(name.trim()) == null) {
             return false;
         }
-        return foodDao.updatestock(name, stock);
+        return foodDao.updateStock(name, stock);
     }
 
     @Override

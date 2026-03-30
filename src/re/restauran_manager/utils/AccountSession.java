@@ -5,6 +5,7 @@ import re.restauran_manager.model.enties.Account;
 
 public class AccountSession {
     private static AccountSession instance;
+    private int currentOrder;
     private Account currentUser;
     private AccountSession() {}
 
@@ -25,6 +26,18 @@ public class AccountSession {
 
     public Account getCurrentUser() {
         return currentUser;
+    }
+
+    public void setCurrentUser(Account currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public int getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public void setCurrentOrder(int order_id) {
+        this.currentOrder = order_id;
     }
 
     public boolean isLoggedIn() {

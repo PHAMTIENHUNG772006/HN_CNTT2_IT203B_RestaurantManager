@@ -52,8 +52,8 @@ public class AuthenticationMenu {
 
             switch (choice) {
                 case 1:
-                    String username = InputMethod.getInputString("Nhập tên đăng nhập mới: ");
-                    String password = InputMethod.getInputString("Nhập mật khẩu: ");
+                    String username = InputMethod.getInputString("Nhập tên đăng nhập mới: ").trim();
+                    String password = InputMethod.getInputString("Nhập mật khẩu: ").trim();
 
                     if (accountService.register(username, password)) {
                         System.out.println(ColorConstants.SUCCESS + "Đăng ký thành công! Vui lòng đăng nhập." + ColorConstants.RESET);

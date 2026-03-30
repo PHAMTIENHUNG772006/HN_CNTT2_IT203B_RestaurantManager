@@ -10,12 +10,14 @@ public interface ICustomerService {
 
     List<Table> getFreeTables();
 
+    void displayPagination(List<MenuItems> listFood);
+
     boolean selectTable(int userId, int tableId);
 
-    boolean orderItems(int userId, int tableId, int foodId, int quantity);
+    boolean placeOrder(int order_id, List<MenuItems> foods);
 
-    void trackOrderStatus(int userId);
+    void trackOrderStatus(int accountId);
 
-    double checkout(int userId, int tableId);
+    double checkout(int accountId, int tableId);
 
 }

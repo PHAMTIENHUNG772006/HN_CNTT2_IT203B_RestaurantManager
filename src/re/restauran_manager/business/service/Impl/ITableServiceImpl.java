@@ -2,19 +2,14 @@ package re.restauran_manager.business.service.Impl;
 
 import re.restauran_manager.business.dao.TableDao;
 import re.restauran_manager.business.service.IService.ITableService;
-import re.restauran_manager.model.enties.MenuItems;
 import re.restauran_manager.model.enties.Table;
 import re.restauran_manager.model.enums.TableStatus;
 import re.restauran_manager.utils.ColorConstants;
-import re.restauran_manager.utils.DB_Connection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 public class ITableServiceImpl implements ITableService {
-    private TableDao tableDao = TableDao.getInstance();
+    private final TableDao tableDao = TableDao.getInstance();
     private static ITableServiceImpl instance;
 
     private ITableServiceImpl() {}
@@ -28,8 +23,8 @@ public class ITableServiceImpl implements ITableService {
 
     @Override
     public boolean add(Table item) {
-        if (item == null || item.getNumber_seats() < 0 ) {
-            System.out.println(ColorConstants.ERROR + "Dữ liệu không hợp lệ." + ColorConstants.RESET);
+        if (item == null || item.getNumber_seats() <= 0) {
+            System.out.println(ColorConstants.ERROR + "Số chỗ ngồi phải lớn hơn 0." + ColorConstants.RESET);
             return false;
         }
         return tableDao.insertTable(item);
@@ -37,23 +32,21 @@ public class ITableServiceImpl implements ITableService {
 
     @Override
     public boolean deleteTable(int id) {
-       Table table = tableDao.findById(id);
-
-        if (table == null) {
-            System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn có ID : [" + id + "]" + ColorConstants.RESET);
+        if (tableDao.findById(id) == null) {
+            System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn ID: [" + id + "]" + ColorConstants.RESET);
             return false;
         }
-        return tableDao.deleteById(table.getTable_id());
+        return tableDao.deleteById(id);
     }
 
     @Override
     public boolean updateSeat(int id, int number_seat) {
-        if (number_seat < 0) {
-            System.out.println(ColorConstants.ERROR + "Số lượng ghế không được âm." + ColorConstants.RESET);
+        if (number_seat <= 0) {
+            System.out.println(ColorConstants.ERROR + "Số lượng ghế không hợp lệ." + ColorConstants.RESET);
             return false;
         }
         if (tableDao.findById(id) == null) {
-            System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn." + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn ID: " + id + ColorConstants.RESET);
             return false;
         }
         return tableDao.updateSeat(id, number_seat);
@@ -61,25 +54,19 @@ public class ITableServiceImpl implements ITableService {
 
     @Override
     public boolean updateStatus(int id, int choice) {
-        if (id <= 0) {
-            System.out.println(ColorConstants.ERROR + "ID không hợp lệ" + ColorConstants.RESET);
-            return false;
+        TableStatus status;
+        switch (choice) {
+            case 1: status = TableStatus.FREE; break;
+            case 2: status = TableStatus.OCCUPIED; break;
+            case 3: status = TableStatus.RESERVED; break;
+            case 4: status = TableStatus.DAMAGED; break;
+            default:
+                System.out.println(ColorConstants.ERROR + "Lựa chọn không hợp lệ (1-4)." + ColorConstants.RESET);
+                return false;
         }
 
         if (tableDao.findById(id) == null) {
             System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn ID: " + id + ColorConstants.RESET);
-            return false;
-        }
-
-        TableStatus status;
-        if (choice == 1) {
-            status = TableStatus.FREE;
-        } else if (choice == 2) {
-            status = TableStatus.OCCUPIED;
-        } else if (choice == 3) {
-        status = TableStatus.RESERVED;
-        } else {
-            System.out.println(ColorConstants.ERROR + "Lựa chọn trạng thái không hợp lệ (Chỉ chọn 1 - 2 - 3)." + ColorConstants.RESET);
             return false;
         }
 
@@ -90,26 +77,21 @@ public class ITableServiceImpl implements ITableService {
     public void displayAll() {
         List<Table> tables = tableDao.displayAll();
         if (tables == null || tables.isEmpty()) {
-            System.out.println(ColorConstants.ERROR + "Danh sách trống." + ColorConstants.RESET);
+            System.out.println(ColorConstants.WARNING + "Danh sách bàn trống." + ColorConstants.RESET);
             return;
         }
-
-        System.out.println("\n" + ColorConstants.SUCCESS + " DANH SÁCH BÀN " + ColorConstants.RESET);
         Table.getHeader();
-        for (Table table : tables) {
-            table.displayData();
-        }
+        tables.forEach(Table::displayData);
         Table.getFooter();
     }
 
     @Override
     public Table findById(int id) {
-        if (id <= 0) return null;
         return tableDao.findById(id);
     }
 
     @Override
-    public Table findByStatus(TableStatus status) {
-       return null;
+    public List<Table> findByStatus(TableStatus status) {
+        return tableDao.findByStatus(status);
     }
 }

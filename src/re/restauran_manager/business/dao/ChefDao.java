@@ -63,8 +63,6 @@ public class ChefDao {
     public List<OrderDetailDisplay> showOrderQueue() {
         List<OrderDetailDisplay> list = new ArrayList<>();
 
-        // Sử dụng MIN(od.id) để lấy ra 1 ID đại diện cho nhóm gộp
-        // Đầu bếp nhập ID này để chuyển trạng thái cho cả nhóm
         String sql = "SELECT MIN(od.id) as display_id, od.order_id, o.table_id, m.food_name, " +
                 "SUM(od.quantity) as total_qty, od.status " +
                 "FROM order_details od " +
@@ -81,7 +79,6 @@ public class ChefDao {
             while (rs.next()) {
                 OrderDetailDisplay item = new OrderDetailDisplay();
 
-                // Set ID đại diện để hiển thị ở cột "Mã Đơn" (hoặc ID)
                 item.setOrderId(rs.getInt("display_id"));
 
                 item.setTableId(rs.getInt("table_id"));

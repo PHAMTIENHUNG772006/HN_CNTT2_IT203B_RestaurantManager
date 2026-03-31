@@ -18,4 +18,12 @@ public interface IAccountService {
     boolean banAccount(int id);
 
     Account findByUsername(String username);
+
+    boolean browseDishesById(int order_id);
+
+    boolean browseDishesAll();
+
+    void statsByMonth();
+
+    void statsByDay();
 }

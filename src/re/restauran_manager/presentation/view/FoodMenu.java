@@ -82,7 +82,8 @@ public class FoodMenu {
                     String findFood = InputMethod.getInputString("Nhập tên món ăn cần tìm: ");
                     List<MenuItems> foods = foodService.findByName(findFood);
 
-                    if (foods == null){
+                    if (foods.isEmpty() || foods == null){
+                        System.out.println(ColorConstants.WARNING + "Không tìm thấy món ăn mà bạn cần tìm.." + ColorConstants.RESET);
                         return;
                     }else {
                         System.out.println(ColorConstants.SUCCESS + "Món ăn được tìm thấy:" + ColorConstants.RESET);

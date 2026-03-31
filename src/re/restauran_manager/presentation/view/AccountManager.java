@@ -81,18 +81,16 @@ public class AccountManager {
         AccountRole role = null;
         while (true) {
             System.out.println("Chọn chức vụ:");
-            System.out.println("1. CUSTOMER (Khách hàng)");
-            System.out.println("2. CHEF (Đầu bếp)");
-            System.out.println("3. MANAGER (Quản lý)");
+            System.out.println("1. CHEF (Đầu bếp)");
+            System.out.println("2. MANAGER (Quản lý)");
 
-            int roleChoice = InputMethod.getInputInt("Nhập lựa chọn (1-3): ");
+            int roleChoice = InputMethod.getInputInt("Nhập lựa chọn (1-2): ");
 
-            if (roleChoice >= 1 && roleChoice <= 3) {
+            if (roleChoice >= 1 && roleChoice <= 2) {
                 role = switch (roleChoice) {
-                    case 1 -> AccountRole.CUSTOMER;
-                    case 2 -> AccountRole.CHEF;
-                    case 3 -> AccountRole.MANAGER;
-                    default -> AccountRole.CUSTOMER;
+                    case 1 -> AccountRole.CHEF;
+                    case 2 -> AccountRole.MANAGER;
+                    default -> AccountRole.CHEF;
                 };
                 break;
             } else {

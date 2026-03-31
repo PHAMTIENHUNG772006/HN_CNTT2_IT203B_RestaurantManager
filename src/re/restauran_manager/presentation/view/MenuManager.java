@@ -16,7 +16,8 @@ public class MenuManager {
             System.out.println("|  2. Quản lý danh sách(món ắn, đồ uống)    |");
             System.out.println("|  3. Quản lý tài khoản                     |");
             System.out.println("|  4. Duyệt món ăn                          |");
-            System.out.println("|  5. Thoát                                 |");
+            System.out.println("|  5. Thống kê và báo cáo                   |");
+            System.out.println("|  6. Thoát                                 |");
             System.out.println("+-------------------------------------------+");
 
             choice = InputMethod.getInputInt("Nhập lựa chọn : ");
@@ -32,17 +33,18 @@ public class MenuManager {
                     AccountManager.viewMenuAccount();
                     break;
                 case 4:
-                    System.out.println("Đã ra menu ngoài");
+                    browseDishesMenu.browseDishes();
                     break;
                 case 5:
+                    StatisticsMenu.displayMenu();
+                    break;
+                case 6:
                     System.out.println("Đã ra menu ngoài");
                     break;
                 default:
                     System.out.println("Lựa chọn sai vui lòng chọn lại..");
             }
-        } while (choice != 3);
-
-
+        } while (choice != 6);
     }
 
 
@@ -54,4 +56,5 @@ public class MenuManager {
     public static void viewMenuManagerFood() {
         FoodMenu.viewMenuFood();
     }
+
 }

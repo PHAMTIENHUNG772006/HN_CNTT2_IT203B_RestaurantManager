@@ -71,17 +71,18 @@ public class OrderDetailDisplay {
     }
 
     public void display() {
-        System.out.printf("║ %-10d ║ %-10d ║ %-20s ║ %-8d ║ %-10s ║\n",
+        System.out.printf("║ %-10d ║ %-10d ║ %-20s ║ %-8d ║ %-17s ║\n",
                 orderId, tableId, foodName, quantity, status);
     }
 
     public static void getHeader() {
-        System.out.println("╔════════════╦════════════╦══════════════════════╦══════════╦════════════╗");
-        System.out.println("║ Mã Đơn     ║ Bàn        ║ Tên Món              ║ SL       ║ Trạng Thái ║");
-        System.out.println("╠════════════╬════════════╬══════════════════════╬══════════╬════════════╣");
+
+        System.out.println("╔════════════╦════════════╦══════════════════════╦══════════╦═══════════════════╗");
+        System.out.println("║ Mã Đơn     ║ Bàn        ║ Tên Món              ║ SL       ║ Trạng Thái        ║");
+        System.out.println("╠════════════╬════════════╬══════════════════════╬══════════╬═══════════════════╣");
     }
 
     public static void getFooter() {
-        System.out.println("╚════════════╩════════════╩══════════════════════╩══════════╩════════════╝");
+        System.out.println("╚════════════╩════════════╩══════════════════════╩══════════╩═══════════════════╝");
     }
 }

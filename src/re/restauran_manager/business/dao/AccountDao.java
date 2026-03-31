@@ -149,6 +149,87 @@ public class AccountDao {
         return addAccount(username, password, AccountRole.CUSTOMER);
     }
 
+    public boolean browseDishesById(int orderId) {
+        String sqlUpdateStatus = "UPDATE order_details SET status = 'PENDING' WHERE order_id = ?";
+
+        try (
+                Connection conn = DB_Connection.openConnection();
+                PreparedStatement ps = conn.prepareStatement(sqlUpdateStatus)
+        ) {
+            ps.setInt(1, orderId);
+
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.err.println(ColorConstants.ERROR + "Lỗi cập nhật trạng thái: " + e.getMessage() + ColorConstants.RESET);
+            return false;
+        }
+    }
+
+    public boolean browseDishesAll() {
+        String sqlUpdateStatus = "UPDATE order_details SET status = 'PENDING'";
+
+        try (
+                Connection conn = DB_Connection.openConnection();
+                PreparedStatement ps = conn.prepareStatement(sqlUpdateStatus)
+        ) {
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.err.println(ColorConstants.ERROR + "Lỗi cập nhật trạng thái: " + e.getMessage() + ColorConstants.RESET);
+            return false;
+        }
+    }
+
+    public void getStatsByDay(String date) {
+        // Truy vấn lấy tổng số đơn và tổng tiền trong 1 ngày
+        String sql = "SELECT COUNT(order_id) AS total_orders, SUM(total_amount) AS total_revenue " +
+                "FROM orders WHERE DATE(order_date) = ?";
+        try (
+                Connection conn = DB_Connection.openConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            ps.setString(1, date);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                displayStatsResult(date, rs.getInt("total_orders"), rs.getDouble("total_revenue"));
+            }
+        } catch (SQLException e) {
+            System.out.println(ColorConstants.ERROR + "Lỗi thống kê theo ngày: " + e.getMessage() + ColorConstants.RESET);
+        }
+    }
+
+    public void getStatsByMonth(int month, int year) {
+        // Truy vấn lấy tổng số đơn và tổng tiền trong 1 tháng
+        String sql = "SELECT COUNT(order_id) AS total_orders, SUM(total_amount) AS total_revenue " +
+                "FROM orders WHERE MONTH(order_date) = ? AND YEAR(order_date) = ? AND status = 'PAID'";
+        try (
+                Connection conn = DB_Connection.openConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            ps.setInt(1, month);
+            ps.setInt(2, year);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String timeLabel = month + "/" + year;
+                displayStatsResult(timeLabel, rs.getInt("total_orders"), rs.getDouble("total_revenue"));
+            }
+        } catch (SQLException e) {
+            System.out.println(ColorConstants.ERROR + "Lỗi thống kê theo tháng: " + e.getMessage() + ColorConstants.RESET);
+        }
+    }
+
+    private void displayStatsResult(String time, int count, double revenue) {
+        System.out.println(ColorConstants.SUCCESS + "\n--- KẾT QUẢ THỐNG KÊ [" + time + "] ---" + ColorConstants.RESET);
+        System.out.println("Số lượng đơn hàng: " + count);
+        System.out.println("Tổng doanh thu   : " + String.format("%,.0f", revenue) + " VNĐ");
+        System.out.println("------------------------------------------");
+    }
+
+
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
         Account account = new Account();
         account.setAccount_id(rs.getInt("account_id"));

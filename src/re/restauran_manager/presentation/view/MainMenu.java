@@ -6,8 +6,7 @@ import re.restauran_manager.utils.InputMethod;
 import java.util.Scanner;
 
 public class MainMenu {
-    public static void viewAuthor(Scanner sc,IAccountService accountService) {
-
+    public static void viewAuthor(Scanner sc) {
         int choice = 0;
         do {
             System.out.println("+===========================================+");
@@ -21,10 +20,10 @@ public class MainMenu {
             choice = InputMethod.getInputInt("Nhập lựa chọn :");
             switch (choice) {
                 case 1:
-                    AuthenticationMenu.printRegisterMenu(accountService);
+                    AuthenticationMenu.printRegisterMenu();
                     break;
                 case 2:
-                    AuthenticationMenu.printLoginMenu(accountService);
+                    AuthenticationMenu.printLoginMenu();
                     break;
                 case 3:
                     System.out.println("Đã Thoát chương trình thành công..");

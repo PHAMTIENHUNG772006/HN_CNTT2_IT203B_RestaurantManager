@@ -6,6 +6,7 @@ import re.restauran_manager.business.service.IService.IAccountService;
 import re.restauran_manager.model.enums.AccountRole;
 import re.restauran_manager.utils.AccountSession;
 import re.restauran_manager.utils.ColorConstants;
+import re.restauran_manager.utils.InputMethod;
 
 import java.util.List;
 
@@ -107,8 +108,52 @@ public class IAccountServiceImpl implements IAccountService {
     @Override
     public Account findByUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
+            System.out.println(ColorConstants.ERROR + "Tên truyền vào không hợp lệ: " + ColorConstants.RESET);
             return null;
         }
         return accountDao.findByName(username.trim());
+    }
+
+    @Override
+    public boolean browseDishesById(int order_id) {
+        if (order_id <= 0) {
+            System.out.println(ColorConstants.ERROR + "ID truyền vào không hợp lệ: " + ColorConstants.RESET);
+            return false;
+        }
+
+        return accountDao.browseDishesById(order_id);
+    }
+
+    @Override
+    public boolean browseDishesAll() {
+        return accountDao.browseDishesAll();
+    }
+
+    @Override
+    public void statsByDay() {
+        String date;
+
+        String regex = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
+
+        while (true) {
+            date = InputMethod.getInputString("Nhập ngày (yyyy-MM-dd): ");
+            if (date.matches(regex)) {
+                break;
+            } else {
+                System.out.println(ColorConstants.ERROR + "Sai định dạng! Vui lòng nhập lại (VD: 2024-05-20)" + ColorConstants.RESET);
+            }
+        }
+        accountDao.getStatsByDay(date);
+    }
+
+    @Override
+    public void statsByMonth() {
+        int month = InputMethod.getInputInt("Nhập tháng (1-12): ");
+        if (month < 1 || month > 12) {
+            System.out.println(ColorConstants.ERROR + "Tháng không hợp lệ!" + ColorConstants.RESET);
+            return;
+        }
+        int year = InputMethod.getInputInt("Nhập năm (VD: 2024): ");
+        accountDao.getStatsByMonth(month, year);
     }
 }

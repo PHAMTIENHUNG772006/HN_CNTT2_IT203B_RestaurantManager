@@ -1,5 +1,6 @@
 package re.restauran_manager.presentation.view;
 
+import re.restauran_manager.business.service.Impl.IAccountServiceImpl;
 import re.restauran_manager.model.enties.Account;
 import re.restauran_manager.model.enums.AccountRole;
 import re.restauran_manager.business.service.IService.IAccountService;
@@ -8,8 +9,8 @@ import re.restauran_manager.utils.InputMethod;
 
 
 public class AuthenticationMenu {
-
-    public static void printLoginMenu(IAccountService accountService) {
+    public static void printLoginMenu() {
+        IAccountService accountService = IAccountServiceImpl.getInstance();
         int choice;
         do {
             System.out.println("\n+===========================================+");
@@ -39,7 +40,8 @@ public class AuthenticationMenu {
         } while (choice != 0);
     }
 
-    public static void printRegisterMenu(IAccountService accountService) {
+    public static void printRegisterMenu() {
+        IAccountService accountService = IAccountServiceImpl.getInstance();
         int choice;
         do {
             System.out.println("\n+===========================================+");

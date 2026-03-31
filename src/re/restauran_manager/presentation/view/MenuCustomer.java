@@ -167,7 +167,7 @@ public class MenuCustomer {
 
             MenuItems foodOriginal = foodService.findById(foodId);
             if (foodOriginal == null || foodOriginal.getStock() <= 0) {
-                System.out.println(ColorConstants.ERROR + "Món không tồn tại hoặc đã hết hàng!");
+                System.out.println(ColorConstants.ERROR + "Món không tồn tại hoặc đã hết hàng!" + ColorConstants.RESET);
                 continue;
             }
 

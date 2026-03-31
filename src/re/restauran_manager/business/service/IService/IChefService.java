@@ -1,8 +1,6 @@
 package re.restauran_manager.business.service.IService;
 
 import re.restauran_manager.model.enties.MenuItems;
-import re.restauran_manager.model.enties.OrderDetailDisplay;
-import re.restauran_manager.model.enties.OrderDetails;
 
 import java.util.List;
 

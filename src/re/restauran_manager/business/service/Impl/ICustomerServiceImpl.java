@@ -2,6 +2,7 @@ package re.restauran_manager.business.service.Impl;
 
 import re.restauran_manager.business.dao.CustomerDao;
 import re.restauran_manager.business.service.IService.ICustomerService;
+import re.restauran_manager.model.dto.OrderDetailDisplay;
 import re.restauran_manager.model.enties.*;
 import re.restauran_manager.model.enums.OrderDetailStatus;
 import re.restauran_manager.utils.AccountSession;
@@ -122,7 +123,6 @@ public class ICustomerServiceImpl implements ICustomerService {
             return false;
         }
 
-        // Lưu ý: Trong cart, bạn dùng getStock() để lưu số lượng khách đặt
         for (MenuItems item : foods) {
             if (item.getStock() <= 0) {
                 System.out.println(ColorConstants.ERROR + "Số lượng món đặt phải > 0!" + ColorConstants.RESET);
@@ -168,9 +168,8 @@ public class ICustomerServiceImpl implements ICustomerService {
     // ================= CHECKOUT =================
     @Override
     public double checkout(int orderId, int tableId) {
-
         if (orderId <= 0 || tableId <= 0) {
-            System.out.println(ColorConstants.ERROR + "Thông tin thanh toán không hợp lệ (ID Bàn hoặc Đơn hàng trống)!" + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Thông tin không hợp lệ!" + ColorConstants.RESET);
             return -1;
         }
 
@@ -178,11 +177,12 @@ public class ICustomerServiceImpl implements ICustomerService {
         boolean shouldCancel = false;
 
         if (count > 0) {
-            System.out.println(ColorConstants.WARNING + "Có " + count + " món chưa phục vụ xong!" + ColorConstants.RESET);
-            String choice = InputMethod.getInputString("Nhập 'Y' để hủy các món này và thanh toán luôn: ");
+            System.out.println(ColorConstants.WARNING + "Có " + count + " món chưa hoàn thành (đang chờ hoặc đang nấu)!" + ColorConstants.RESET);
+            String choice = InputMethod.getInputString("Nhập 'Y' để hoàn kho/hủy món chưa nấu và thanh toán hóa đơn: ");
             if (choice.equalsIgnoreCase("Y")) {
                 shouldCancel = true;
             } else {
+                System.out.println("Hủy thanh toán để đợi món.");
                 return -2;
             }
         }
@@ -190,12 +190,8 @@ public class ICustomerServiceImpl implements ICustomerService {
         double total = customerDao.processCheckout(tableId, orderId, shouldCancel);
 
         if (total >= 0) {
-            System.out.println(ColorConstants.SUCCESS + "Thanh toán thành công. Tổng tiền: " + total + " VND" + ColorConstants.RESET);
             AccountSession.getInstance().setCurrentOrder(0);
-        } else {
-            System.out.println(ColorConstants.ERROR + "Lỗi hệ thống: Thanh toán thất bại!" + ColorConstants.RESET);
         }
-
         return total;
     }
 

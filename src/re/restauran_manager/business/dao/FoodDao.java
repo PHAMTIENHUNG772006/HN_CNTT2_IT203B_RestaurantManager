@@ -26,11 +26,11 @@ public class FoodDao {
     }
 
     public  List<MenuItems> findByName(String name) {
-        String sql = "SELECT food_id, food_name, price, category, stock FROM menu_items WHERE food_name LIKE ?";
+        String sql = "SELECT food_id, food_name, price, category, stock FROM menu_items WHERE food_name = ?";
         List<MenuItems> foods = new ArrayList<>();
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pre = conn.prepareStatement(sql)) {
-            pre.setString(1, "%" + name + "%");
+            pre.setString(1, name );
             try (ResultSet rs = pre.executeQuery()) {
                 while (rs.next()){
                     MenuItems items =  mapResultSetToFood(rs);

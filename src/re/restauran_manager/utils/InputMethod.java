@@ -18,7 +18,7 @@ public class InputMethod {
         System.out.print(message);
         while (true) {
             try {
-                String input = sc.nextLine();
+                String input = sc.nextLine().trim();
                 int n = Integer.parseInt(input);
                 if (n >= 0) return n;
                 System.out.print(ColorConstants.ERROR + "Vui lòng nhập số dương. Nhập lại: " + ColorConstants.RESET);

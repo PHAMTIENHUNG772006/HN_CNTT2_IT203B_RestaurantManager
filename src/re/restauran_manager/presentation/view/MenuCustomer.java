@@ -40,7 +40,6 @@ public class MenuCustomer {
 
             choice = InputMethod.getInputInt("Nhập lựa chọn : ");
 
-            // Lấy ID đơn hàng hiện tại từ Session để dùng chung cho các Case
             int currentOrderId = accountSession.getCurrentOrder();
 
             switch (choice) {
@@ -51,7 +50,6 @@ public class MenuCustomer {
                     handleSelectTable(accountSession);
                     break;
                 case 3:
-                    // Sau khi gọi món, cập nhật ID vào Session
                     int idAfterOrder = orderFood(accountSession.getCurrentUser().getAccount_id());
                     if (idAfterOrder > 0) {
                         accountSession.setCurrentOrder(idAfterOrder);
@@ -67,7 +65,6 @@ public class MenuCustomer {
                     }
                     break;
                 case 5:
-                    // Lấy trực tiếp từ Session để đảm bảo dữ liệu mới nhất
                     if (currentOrderId == 0) {
                         System.out.println(ColorConstants.WARNING + "Vui lòng vào mục 'Gọi món' và chọn ID đơn hàng trước!" + ColorConstants.RESET);
                     } else {
@@ -129,7 +126,6 @@ public class MenuCustomer {
             return;
         }
 
-        //selectTable đã tự gán ID vào AccountSession trong Service của bạn
         customerService.selectTable(session.getCurrentUser().getAccount_id(), tableId);
     }
 
@@ -157,7 +153,6 @@ public class MenuCustomer {
         }
 
         List<MenuItems> cart = new ArrayList<>();
-        // Hiển thị danh sách món ăn để chọn
         List<MenuItems> allFood = customerService.getAllAvailableFood();
         customerService.displayPagination(allFood);
 

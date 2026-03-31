@@ -1,79 +1,61 @@
-DROP DATABASE restaurant_manager;
-CREATE DATABASE restaurant_manager;
-USE restaurant_manager;
+drop database if exists restaurant_manager;
+create database restaurant_manager;
+use restaurant_manager;
 
--- ================== ACCOUNT ==================
-CREATE TABLE Account
+-- ================== account ==================
+create table account
 (
-    account_id   INT AUTO_INCREMENT PRIMARY KEY,
-    account_name VARCHAR(100)                       NOT NULL UNIQUE,
-    password     VARCHAR(200)                       NOT NULL,
-    isban        BOOLEAN DEFAULT FALSE,
-    role         ENUM ('CUSTOMER','CHEF','MANAGER') NOT NULL
+    account_id   int auto_increment primary key,
+    account_name varchar(100)                       not null unique,
+    password     varchar(200)                       not null,
+    isban        boolean default false,
+    role         enum ('customer','chef','manager') not null
 );
 
--- ================== MENU ==================
-CREATE TABLE Menu_items
+-- ================== menu ==================
+create table menu_items
 (
-    food_id   INT PRIMARY KEY AUTO_INCREMENT,
-    food_name VARCHAR(255)          NOT NULL,
-    price     DECIMAL(15, 2)        NOT NULL CHECK (price > 0),
-    category  ENUM ('FOOD','DRINK') NOT NULL,
-    stock     INT                   NOT NULL CHECK (stock >= 0)
+    food_id   int primary key auto_increment,
+    food_name varchar(255)          not null,
+    price     decimal(15, 2)        not null check (price > 0),
+    category  enum ('food','drink') not null,
+    stock     int                   not null check (stock >= 0)
 );
 
--- ================== TABLE ==================
-CREATE TABLE Tables
+-- ================== table ==================
+create table tables
 (
-    table_id     INT PRIMARY KEY AUTO_INCREMENT,
-    number_seats INT NOT NULL CHECK (number_seats > 0),
-    status       ENUM ('FREE','OCCUPIED','RESERVED','DAMAGED')
-                     NOT NULL DEFAULT 'FREE'
+    table_id     int primary key auto_increment,
+    number_seats int not null check (number_seats > 0),
+    status       enum ('free','occupied','reserved','damaged')
+                     not null default 'free'
 );
 
--- ================== ORDERS ==================
-CREATE TABLE Orders
+-- ================== orders ==================
+create table orders
 (
-    order_id     INT PRIMARY KEY AUTO_INCREMENT,
-    user_id      INT            NOT NULL,
-    table_id     INT            NOT NULL,
-    total_amount DECIMAL(15, 2) NOT NULL            DEFAULT 0 CHECK (total_amount >= 0),
-    order_date   DATETIME                           DEFAULT CURRENT_TIMESTAMP,
-    status       ENUM ('PENDING', 'PAID', 'CANCEL') DEFAULT 'PENDING',
+    order_id     int primary key auto_increment,
+    user_id      int            not null,
+    table_id     int            not null,
+    total_amount decimal(15, 2) not null            default 0 check (total_amount >= 0),
+    order_date   datetime                           default current_timestamp,
+    status       enum ('pending', 'paid', 'cancel') default 'pending',
 
-    FOREIGN KEY (user_id) REFERENCES Account (account_id),
-    FOREIGN KEY (table_id) REFERENCES Tables (table_id)
+    foreign key (user_id) references account (account_id),
+    foreign key (table_id) references tables (table_id)
 );
 
--- ================== ORDER DETAILS (FIX CHÍNH) ==================
-CREATE TABLE IF NOT EXISTS Order_Details
+-- ================== order details ==================
+create table if not exists order_details
 (
-    id         INT PRIMARY KEY AUTO_INCREMENT,
-    order_id   INT            NOT NULL,
-    food_id    INT            NOT NULL,
-    quantity   INT            NOT NULL CHECK (quantity > 0),
-    unit_price DECIMAL(15, 2) NOT NULL CHECK (unit_price >= 0),
-    status     ENUM ('WAITING_APPROVAL', 'PENDING', 'COOKING', 'READY','SERVED','CANCEL')
-                              NOT NULL DEFAULT 'WAITING_APPROVAL',
+    id         int primary key auto_increment,
+    order_id   int            not null,
+    food_id    int            not null,
+    quantity   int            not null check (quantity > 0),
+    unit_price decimal(15, 2) not null check (unit_price >= 0),
+    status     enum ('waiting_approval', 'pending', 'cooking', 'ready','served','cancel')
+                              not null default 'waiting_approval',
 
-    FOREIGN KEY (food_id) REFERENCES Menu_items (food_id),
-    FOREIGN KEY (order_id) REFERENCES Orders (order_id) ON DELETE CASCADE
+    foreign key (food_id) references menu_items (food_id),
+    foreign key (order_id) references orders (order_id) on delete cascade
 );
-
--- ================== FEEDBACK ==================
-CREATE TABLE reviews
-(
-    review_id INT PRIMARY KEY AUTO_INCREMENT,
-    account_id  INT NOT NULL,
-    order_id    INT NOT NULL,
-    rate        INT CHECK (rate BETWEEN 1 AND 5),
-    comment     TEXT,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (account_id) REFERENCES Account (account_id),
-    FOREIGN KEY (order_id) REFERENCES Orders (order_id),
-
-
-    UNIQUE (account_id, order_id)
-);
-

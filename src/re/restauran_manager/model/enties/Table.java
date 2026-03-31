@@ -68,9 +68,8 @@ public class Table {
 
         System.out.println("Chọn trạng thái bàn:");
         System.out.println("1. Trống (FREE)");
-        System.out.println("2. Đang có khách (OCCUPIED)");
-        System.out.println("3. Đã đặt trước (RESERVED)");
-        System.out.println("4. Bàn hỏng/Sửa chữa (DAMAGED)");
+        System.out.println("2. Đã đặt trước (RESERVED)");
+        System.out.println("23. Bàn hỏng/Sửa chữa (DAMAGED)");
 
         while (true) {
             int choice = InputMethod.getInputInt("Lựa chọn của bạn: ");
@@ -79,12 +78,9 @@ public class Table {
                     table.setStatus(TableStatus.FREE);
                     return table;
                 case 2:
-                    table.setStatus(TableStatus.OCCUPIED);
-                    return table;
-                case 3:
                     table.setStatus(TableStatus.RESERVED);
                     return table;
-                case 4:
+                case 3:
                     table.setStatus(TableStatus.DAMAGED);
                     return table;
                 default:

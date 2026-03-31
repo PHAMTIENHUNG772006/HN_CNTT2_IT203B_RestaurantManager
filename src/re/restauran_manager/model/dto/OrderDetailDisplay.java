@@ -1,4 +1,4 @@
-package re.restauran_manager.model.enties;
+package re.restauran_manager.model.dto;
 
 import re.restauran_manager.model.enums.OrderDetailStatus;
 

@@ -1,7 +1,6 @@
 package re.restauran_manager.business.dao;
 
-import re.restauran_manager.model.enties.MenuItems;
-import re.restauran_manager.model.enties.OrderDetailDisplay;
+import re.restauran_manager.model.dto.OrderDetailDisplay;
 import re.restauran_manager.model.enties.OrderDetails;
 import re.restauran_manager.model.enums.OrderDetailStatus;
 import re.restauran_manager.utils.ColorConstants;

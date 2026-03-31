@@ -20,8 +20,8 @@ public class AccountManager {
             System.out.println("|            QUẢN LÝ TÀI KHOẢN              |");
             System.out.println("+===========================================+");
             System.out.println("|  1. Danh sách tất cả tài khoản            |");
-            System.out.println("|  2. Thêm mới tài khoản (Nhân viên/Bếp)    |");
-            System.out.println("|  3. Khóa tài khoản người dùng             |");
+            System.out.println("|  2. Thêm mới tài khoản CHEF               |");
+            System.out.println("|  3. Khóa / Mở tài khoản                   |");
             System.out.println("|  4. Tìm kiếm tài khoản theo tên           |");
             System.out.println("|  5. Quay lại                              |");
             System.out.println("+-------------------------------------------+");
@@ -74,39 +74,22 @@ public class AccountManager {
     }
 
     private static void addNewAccount() {
-        System.out.println("\n--- THÊM TÀI KHOẢN MỚI ---");
+        System.out.println("\n--- THÊM TÀI KHOẢN ĐẦU BẾP (CHEF) ---");
         String username = InputMethod.getInputString("Nhập tên đăng nhập: ");
         String password = InputMethod.getInputString("Nhập mật khẩu: ");
 
-        AccountRole role = null;
-        while (true) {
-            System.out.println("Chọn chức vụ:");
-            System.out.println("1. CHEF (Đầu bếp)");
-            System.out.println("2. MANAGER (Quản lý)");
-
-            int roleChoice = InputMethod.getInputInt("Nhập lựa chọn (1-2): ");
-
-            if (roleChoice >= 1 && roleChoice <= 2) {
-                role = switch (roleChoice) {
-                    case 1 -> AccountRole.CHEF;
-                    case 2 -> AccountRole.MANAGER;
-                    default -> AccountRole.CHEF;
-                };
-                break;
-            } else {
-                System.out.println(ColorConstants.ERROR + "Lựa chọn không hợp lệ. Vui lòng nhập từ 1 đến 3!" + ColorConstants.RESET);
-            }
-        }
+        AccountRole role = AccountRole.CHEF;
 
         if (accountService.addAccount(username, password, role)) {
-            System.out.println(ColorConstants.SUCCESS + "Tạo tài khoản thành công!" + ColorConstants.RESET);
+            System.out.println(ColorConstants.SUCCESS + "Tạo tài khoản ĐẦU BẾP thành công!" + ColorConstants.RESET);
         } else {
             System.out.println(ColorConstants.ERROR + "Tạo tài khoản thất bại (Tên đăng nhập có thể đã tồn tại)." + ColorConstants.RESET);
         }
     }
+
     private static void banUserAccount() {
         displayAllAccounts();
-        int id = InputMethod.getInputInt("Nhập ID tài khoản muốn khóa: ");
+        int id = InputMethod.getInputInt("Nhập ID tài khoản muốn (Khóa/Mở): ");
         if (accountService.banAccount(id)) {
             System.out.println(ColorConstants.SUCCESS + "Đã khóa tài khoản thành công!" + ColorConstants.RESET);
         } else {
@@ -117,14 +100,26 @@ public class AccountManager {
     private static void searchAccountByUsername() {
         String username = InputMethod.getInputString("Nhập tên tài khoản cần tìm: ");
         Account acc = accountService.findByUsername(username);
+
         if (acc != null) {
-            System.out.println(ColorConstants.SUCCESS + "Thông tin tìm thấy:" + ColorConstants.RESET);
-            System.out.println("ID: " + acc.getAccount_id());
-            System.out.println("Tên: " + acc.getAccount_name());
-            System.out.println("Quyền: " + acc.getRole());
-            System.out.println("Trạng thái: " + (acc.isBan() ? "Đang bị khóa" : "Đang hoạt động"));
+            System.out.println(ColorConstants.SUCCESS + "\n[ KẾT QUẢ TÌM KIẾM ]" + ColorConstants.RESET);
+            System.out.println("╔══════════════════════╦══════════════════════════════════╗");
+            System.out.printf("║ %-20s ║ %-32s ║\n", "THÔNG TIN", "CHI TIẾT");
+            System.out.println("╠══════════════════════╬══════════════════════════════════╣");
+
+            System.out.printf("║ %-20s ║ %-32s ║\n", "Mã tài khoản (ID)", acc.getAccount_id());
+            System.out.printf("║ %-20s ║ %-32s ║\n", "Tên đăng nhập", acc.getAccount_name());
+            System.out.printf("║ %-20s ║ %-32s ║\n", "Quyền hạn", acc.getRole());
+
+            String statusText = acc.isBan() ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG";
+            String statusColor = acc.isBan() ? ColorConstants.ERROR : ColorConstants.SUCCESS;
+
+            System.out.printf("║ %-20s ║ %s%-32s%s ║\n",
+                    "Trạng thái", statusColor, statusText, ColorConstants.RESET);
+
+            System.out.println("╚══════════════════════╩══════════════════════════════════╝");
         } else {
-            System.out.println(ColorConstants.WARNING + "Không tìm thấy tài khoản: " + username + ColorConstants.RESET);
+            System.out.println(ColorConstants.WARNING + "(!) Không tìm thấy tài khoản nào có tên: " + username + ColorConstants.RESET);
         }
     }
 }

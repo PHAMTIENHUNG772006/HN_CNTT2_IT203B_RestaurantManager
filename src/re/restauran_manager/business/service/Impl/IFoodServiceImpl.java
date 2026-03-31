@@ -115,7 +115,6 @@ public class IFoodServiceImpl implements IFoodService {
 
             System.out.println(ColorConstants.SUCCESS + "\n--- MENU NHÀ HÀNG (TRANG " + currentPage + "/" + totalPages + ") ---" + ColorConstants.RESET);
 
-            // Kiểm tra và gọi header/footer từ class MenuItems
             MenuItems.getHeader();
             int startIndex = (currentPage - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, listFood.size());

@@ -130,9 +130,7 @@ public class AccountDao {
     }
 
     public boolean bandAccount(int id) {
-        String sql = "UPDATE account SET isBan = true where account_id = ?";
-
-
+        String sql = "UPDATE account SET isBan = NOT isBan WHERE account_id = ?";
         try (
                 Connection conn = DB_Connection.openConnection();
                 PreparedStatement pre = conn.prepareStatement(sql)
@@ -148,6 +146,12 @@ public class AccountDao {
     public boolean register(String username, String password) {
         return addAccount(username, password, AccountRole.CUSTOMER);
     }
+
+    public boolean initAccountAdmin(String username, String password) {
+        return addAccount(username, password, AccountRole.MANAGER);
+    }
+
+
 
     public boolean browseDishesById(int orderId) {
         String sqlUpdateStatus = "UPDATE order_details SET status = 'PENDING' WHERE order_id = ?";

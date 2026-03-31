@@ -1,10 +1,10 @@
 package re.restauran_manager.model.enties;
 
+import re.restauran_manager.model.enums.OrderDetailStatus;
 import re.restauran_manager.model.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class Orders {
     private int id;
@@ -75,13 +75,20 @@ public class Orders {
     }
 
     public static void getHeader() {
-        System.out.printf("| %-5s | %-8s | %-15s | %-18s | %-10s |\n", "ID", "User ID", "Total", "Order Date", "Status");
-        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("╔══════╦══════════╦══════════╦═════════════════╦══════════════════╦════════════╗");
+        System.out.printf("║ %-4s ║ %-8s ║ %-8s ║ %-15s ║ %-16s ║ %-10s ║\n",
+                "ID", "User ID", "Bàn ID", "Tổng tiền", "Ngày đặt", "Trạng thái");
+        System.out.println("╠══════╬══════════╬══════════╬═════════════════╬══════════════════╬════════════╣");
     }
 
     public void displayData() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String dateStr = (this.orderDate != null) ? this.orderDate.format(formatter) : "Null";
-        System.out.printf("| %-5d | %-8d | %-8d | %,15.2f | %-18s | %-10s |\n", this.id, this.userId, this.tableId, this.totalAmount, dateStr, this.status);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+        String dateStr = (this.orderDate != null) ? this.orderDate.format(formatter) : "N/A";
+        System.out.printf("║ %-4d ║ %-8d ║ %-8d ║ %,15.2f ║ %-16s ║ %-10s ║\n",
+                this.id, this.userId, this.tableId, this.totalAmount, dateStr, this.status);
+    }
+
+    public static void getFooter() {
+        System.out.println("╚══════╩══════════╩══════════╩═════════════════╩══════════════════╩════════════╝");
     }
 }

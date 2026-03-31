@@ -73,6 +73,7 @@ public class AuthenticationMenu {
         switch (role) {
             case CHEF:
                 System.out.println(ColorConstants.SUCCESS + "Chào mừng đầu bếp!" + ColorConstants.RESET);
+                MenuChef.viewMenuChef();
                 break;
             case MANAGER:
                 System.out.println(ColorConstants.SUCCESS + "Chào mừng quản lý...!" + ColorConstants.RESET);

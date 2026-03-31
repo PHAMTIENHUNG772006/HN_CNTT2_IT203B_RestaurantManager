@@ -25,14 +25,20 @@ public class FoodDao {
         return instance;
     }
 
-    public MenuItems findByName(String name) {
-        String sql = "SELECT food_id, food_name, price, category, stock FROM menu_items WHERE food_name = ?";
+    public  List<MenuItems> findByName(String name) {
+        String sql = "SELECT food_id, food_name, price, category, stock FROM menu_items WHERE food_name LIKE ?";
+        List<MenuItems> foods = new ArrayList<>();
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pre = conn.prepareStatement(sql)) {
-            pre.setString(1, name);
+            pre.setString(1, "%" + name + "%");
             try (ResultSet rs = pre.executeQuery()) {
-                if (rs.next()) return mapResultSetToFood(rs);
+                while (rs.next()){
+                    MenuItems items =  mapResultSetToFood(rs);
+
+                    foods.add(items);
+                }
             }
+            return foods;
         } catch (SQLException e) {
             System.out.println(ColorConstants.ERROR + "Lỗi: " + e.getMessage() + ColorConstants.RESET);
         }
@@ -69,40 +75,40 @@ public class FoodDao {
         }
     }
 
-    public boolean deleteByName(String name) {
-        String sql = "DELETE FROM menu_items WHERE food_name = ?";
+    public boolean deleteById(int id) {
+        String sql = "DELETE FROM menu_items WHERE food_id = ?";
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, name);
+            pstmt.setInt(1, id);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println(ColorConstants.ERROR + "Lỗi: " + e.getMessage() + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Lỗi xóa món: " + e.getMessage() + ColorConstants.RESET);
             return false;
         }
     }
 
-    public boolean updatePrice(String name, double price) {
-        String sql = "UPDATE menu_items SET price = ? WHERE food_name = ?";
+    public boolean updatePrice(int id, double price) {
+        String sql = "UPDATE menu_items SET price = ? WHERE food_id = ?";
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setDouble(1, price);
-            pstmt.setString(2, name);
+            pstmt.setInt(2, id);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println(ColorConstants.ERROR + "Lỗi: " + e.getMessage() + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Lỗi cập nhật giá: " + e.getMessage() + ColorConstants.RESET);
             return false;
         }
     }
 
-    public boolean updateStock(String name, int stock) {
-        String sql = "UPDATE menu_items SET stock = ? WHERE food_name = ?";
+    public boolean updateStock(int id, int stock) {
+        String sql = "UPDATE menu_items SET stock = ? WHERE food_id = ?";
         try (Connection conn = DB_Connection.openConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, stock);
-            pstmt.setString(2, name);
+            pstmt.setInt(2, id);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println(ColorConstants.ERROR + "Lỗi: " + e.getMessage() + ColorConstants.RESET);
+            System.out.println(ColorConstants.ERROR + "Lỗi cập nhật kho: " + e.getMessage() + ColorConstants.RESET);
             return false;
         }
     }

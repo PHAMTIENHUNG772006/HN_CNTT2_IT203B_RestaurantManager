@@ -1,6 +1,6 @@
 package re.restauran_manager.model.enties;
 
-import re.restauran_manager.model.enums.OrderStatus;
+import re.restauran_manager.model.enums.OrderDetailStatus;
 
 public class OrderDetails {
     private int id;
@@ -8,11 +8,11 @@ public class OrderDetails {
     private int itemId;
     private int quantity;
     private double price;
-    private OrderStatus status;
+    private OrderDetailStatus status;
 
     public OrderDetails() {}
 
-    public OrderDetails(int id, int orderId, int itemId, int quantity, double price, OrderStatus status) {
+    public OrderDetails(int id, int orderId, int itemId, int quantity, double price, OrderDetailStatus status) {
         this.id = id;
         this.orderId = orderId;
         this.itemId = itemId;
@@ -22,11 +22,11 @@ public class OrderDetails {
     }
 
 
-    public OrderStatus getStatus() {
+    public OrderDetailStatus getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
+    public void setStatus(OrderDetailStatus status) {
         this.status = status;
     }
 

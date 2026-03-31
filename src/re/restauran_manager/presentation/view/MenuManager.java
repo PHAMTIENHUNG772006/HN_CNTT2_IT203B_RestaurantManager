@@ -14,7 +14,9 @@ public class MenuManager {
             System.out.println("+===========================================+");
             System.out.println("|  1. Quản lý danh sách bàn                 |");
             System.out.println("|  2. Quản lý danh sách(món ắn, đồ uống)    |");
-            System.out.println("|  3. Thoát                                 |");
+            System.out.println("|  3. Quản lý tài khoản                     |");
+            System.out.println("|  4. Duyệt món ăn                          |");
+            System.out.println("|  5. Thoát                                 |");
             System.out.println("+-------------------------------------------+");
 
             choice = InputMethod.getInputInt("Nhập lựa chọn : ");
@@ -27,6 +29,12 @@ public class MenuManager {
                     viewMenuManagerFood();
                     break;
                 case 3:
+                    AccountManager.viewMenuAccount();
+                    break;
+                case 4:
+                    System.out.println("Đã ra menu ngoài");
+                    break;
+                case 5:
                     System.out.println("Đã ra menu ngoài");
                     break;
                 default:

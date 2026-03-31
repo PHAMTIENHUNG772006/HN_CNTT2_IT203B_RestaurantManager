@@ -2,6 +2,7 @@ package re.restauran_manager.model.enties;
 
 import re.restauran_manager.model.enums.AccountRole;
 import re.restauran_manager.model.enums.AccountStatus;
+import re.restauran_manager.utils.ColorConstants;
 
 public class Account {
     private int account_id;
@@ -64,12 +65,25 @@ public class Account {
     }
 
     public static void getHeader() {
-        System.out.printf("| %-5s | %-10s | %-7s | %-7s |\n", "ID", "Role", "Status Account");
-        System.out.println("-------------------------------------------------------------------");
+        System.out.println("╔══════╦══════════════════════╦══════════════╦══════════════╗");
+        System.out.printf("║ %-4s ║ %-20s ║ %-12s ║ %-12s ║\n",
+                "ID", "Tên tài khoản", "Chức vụ", "Trạng thái");
+        System.out.println("╠══════╬══════════════════════╬══════════════╬══════════════╣");
     }
 
     public void displayData() {
-        System.out.printf("| %-5d | %-10d | %-6d | %5b |\n", this.account_id, this.role, this.isBan ? "Bị khóa" : "Hoạt động");
+        String statusLabel = this.isBan ? ColorConstants.ERROR + "Bị khóa" + ColorConstants.RESET
+                : ColorConstants.SUCCESS + "Hoạt động" + ColorConstants.RESET;
+
+        System.out.printf("║ %-4d ║ %-20s ║ %-12s ║ %-21s ║\n",
+                this.account_id,
+                this.account_name,
+                this.role != null ? this.role.name() : "N/A",
+                statusLabel);
+    }
+
+    public static void getFooter() {
+        System.out.println("╚══════╩══════════════════════╩══════════════╩══════════════╝");
     }
 }
 

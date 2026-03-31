@@ -1,6 +1,5 @@
 package re.restauran_manager.presentation.view;
 
-import re.restauran_manager.business.dao.TableDao;
 import re.restauran_manager.business.service.IService.ICustomerService;
 import re.restauran_manager.business.service.IService.IFoodService;
 import re.restauran_manager.business.service.IService.ITableService;
@@ -8,16 +7,14 @@ import re.restauran_manager.business.service.Impl.ICustomerServiceImpl;
 import re.restauran_manager.business.service.Impl.IFoodServiceImpl;
 import re.restauran_manager.business.service.Impl.ITableServiceImpl;
 import re.restauran_manager.model.enties.MenuItems;
+import re.restauran_manager.model.enties.Orders;
 import re.restauran_manager.model.enties.Table;
 import re.restauran_manager.utils.AccountSession;
 import re.restauran_manager.utils.ColorConstants;
 import re.restauran_manager.utils.InputMethod;
 
-import java.awt.*;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class MenuCustomer {
     static ICustomerService customerService = ICustomerServiceImpl.getInstance();
@@ -25,132 +22,185 @@ public class MenuCustomer {
     static ITableService tableService = ITableServiceImpl.getInstance();
 
     public static void viewMenuCustomer() {
-        Scanner sc = new Scanner(System.in);
-
         AccountSession accountSession = AccountSession.getInstance();
         int choice = 0;
+
         do {
             System.out.println("+===========================================+");
             System.out.println("|              MENU CUSTOMER                |");
             System.out.println("+===========================================+");
             System.out.println("|  1. Xem danh sách món ăn                  |");
-            System.out.println("|  2. Chọn bàn                              |");
+            System.out.println("|  2. Chọn bàn (Mở hóa đơn)                 |");
             System.out.println("|  3. Gọi món                               |");
-            System.out.println("|  4. Theo dõi trạng thái món ăn            |");
-            System.out.println("|  5. Thanh toán hóa đơn                    |");
-            System.out.println("|  6. Thoát                                 |");
+            System.out.println("|  4. Hủy món                               |");
+            System.out.println("|  5. Theo dõi trạng thái món ăn            |");
+            System.out.println("|  6. Thanh toán hóa đơn                    |");
+            System.out.println("|  7. Thoát                                 |");
             System.out.println("+-------------------------------------------+");
 
             choice = InputMethod.getInputInt("Nhập lựa chọn : ");
+
+            // Lấy ID đơn hàng hiện tại từ Session để dùng chung cho các Case
+            int currentOrderId = accountSession.getCurrentOrder();
+
             switch (choice) {
                 case 1:
-                    List<MenuItems> foods = customerService.getAllAvailableFood();
-
-                    customerService.displayPagination(foods);
+                    customerService.displayPagination(customerService.getAllAvailableFood());
                     break;
                 case 2:
-
-                    List<Table> freeTables = customerService.getFreeTables();
-
-                    if (freeTables.isEmpty()) {
-                        System.out.println(ColorConstants.WARNING + "Xin lỗi, hiện tại không còn bàn nào trống!" + ColorConstants.RESET);
-                        return;
-                    }
-
-                    Table.getHeader();
-                   freeTables.stream().forEach(table -> table.displayData());
-                    Table.getFooter();
-                    int tableId = InputMethod.getInputInt("Nhập ID bàn muốn ngồi (0 để thoát): ");
-                    if (tableId == 0) return;
-                    boolean isAvailable = freeTables.stream().anyMatch(t -> t.getTable_id() == tableId);
-
-                    if (!isAvailable) {
-                        System.out.println(ColorConstants.ERROR + "ID bàn không hợp lệ hoặc bàn này vừa có người ngồi!" + ColorConstants.RESET);
-                        break;
-                    }
-                    System.out.println(tableId);
-                    boolean success = customerService.selectTable(accountSession.getCurrentUser().getAccount_id(), tableId);
-
-                    if (success) {
-                        System.out.println(ColorConstants.SUCCESS + "Chọn bàn thành công! Mời bạn chọn món." + ColorConstants.RESET);
-                    } else {
-                        System.out.println(ColorConstants.ERROR + "Có lỗi xảy ra, vui lòng thử lại." + ColorConstants.RESET);
-                    }
+                    handleSelectTable(accountSession);
                     break;
                 case 3:
-                    orderFood(AccountSession.getInstance().getCurrentUser().getAccount_id(),AccountSession.getInstance().getCurrentOrder());
+                    // Sau khi gọi món, cập nhật ID vào Session
+                    int idAfterOrder = orderFood(accountSession.getCurrentUser().getAccount_id());
+                    if (idAfterOrder > 0) {
+                        accountSession.setCurrentOrder(idAfterOrder);
+                    }
                     break;
                 case 4:
+                    if (currentOrderId == 0) {
+                        System.out.println(ColorConstants.WARNING + "Vui lòng chọn đơn hàng (trong mục Gọi món) trước khi hủy!" + ColorConstants.RESET);
+                    } else {
+                        int food_id = InputMethod.getInputInt("Nhập ID món muốn hủy : ");
+                        int quantity = InputMethod.getInputInt("Nhập số lượng muốn hủy : ");
+                        customerService.cancelFood(currentOrderId, food_id, quantity);
+                    }
                     break;
                 case 5:
+                    // Lấy trực tiếp từ Session để đảm bảo dữ liệu mới nhất
+                    if (currentOrderId == 0) {
+                        System.out.println(ColorConstants.WARNING + "Vui lòng vào mục 'Gọi món' và chọn ID đơn hàng trước!" + ColorConstants.RESET);
+                    } else {
+                        customerService.trackOrderStatus(currentOrderId);
+                    }
                     break;
                 case 6:
-                    System.out.println("Đã ra menu ngoài");
+                    int orderToPay = accountSession.getCurrentOrder();
+
+                    if (orderToPay <= 0) {
+                        System.out.println(ColorConstants.WARNING + "Không có đơn hàng nào đang hoạt động để thanh toán." + ColorConstants.RESET);
+                    } else {
+                        Orders currentOrder = null;
+                        List<Orders> myOrders = customerService.getActiveOrders(accountSession.getCurrentUser().getAccount_id());
+
+                        for(Orders o : myOrders) {
+                            if(o.getId() == orderToPay) {
+                                currentOrder = o;
+                                break;
+                            }
+                        }
+
+                        if (currentOrder != null) {
+                            double total = customerService.checkout(orderToPay, currentOrder.getTableId());
+
+                            if (total >= 0) {
+                                accountSession.setCurrentOrder(0);
+                            }
+                        } else {
+                            System.out.println(ColorConstants.ERROR + "Không tìm thấy thông tin bàn của hóa đơn này!" + ColorConstants.RESET);
+                        }
+                    }
+                    break;
+                case 7:
+                    System.out.println("Đã quay lại menu chính.");
                     break;
                 default:
-                    System.out.println(ColorConstants.WARNING + "Lựa chọn không hợp lệ. Chọn lại" + ColorConstants.RESET);
+                    System.out.println(ColorConstants.WARNING + "Lựa chọn không hợp lệ." + ColorConstants.RESET);
             }
-        } while (choice != 6);
+        } while (choice != 7);
     }
 
-
-
-    private static void orderFood(int currentAccount, int currentOrder) {
-        if (currentOrder <= 0) {
-            System.out.println(ColorConstants.WARNING + "Vui lòng đặt bàn trước khi gọi món!" + ColorConstants.RESET);
+    private static void handleSelectTable(AccountSession session) {
+        List<Table> freeTables = customerService.getFreeTables();
+        if (freeTables == null || freeTables.isEmpty()) {
+            System.out.println(ColorConstants.WARNING + "Xin lỗi, hiện tại không còn bàn nào trống!" + ColorConstants.RESET);
             return;
         }
 
+        Table.getHeader();
+        freeTables.forEach(Table::displayData);
+        Table.getFooter();
+
+        int tableId = InputMethod.getInputInt("Nhập ID bàn muốn ngồi (0 để quay lại): ");
+        if (tableId == 0) return;
+
+        if (freeTables.stream().noneMatch(t -> t.getTable_id() == tableId)) {
+            System.out.println(ColorConstants.ERROR + "ID bàn không hợp lệ!" + ColorConstants.RESET);
+            return;
+        }
+
+        //selectTable đã tự gán ID vào AccountSession trong Service của bạn
+        customerService.selectTable(session.getCurrentUser().getAccount_id(), tableId);
+    }
+
+    private static int orderFood(int currentAccountId) {
+        List<Orders> activeOrders = customerService.getActiveOrders(currentAccountId);
+
+        if (activeOrders == null || activeOrders.isEmpty()) {
+            System.out.println(ColorConstants.WARNING + "Bạn chưa đặt bàn hôm nay! Vui lòng thực hiện 'Chọn bàn' trước." + ColorConstants.RESET);
+            return 0;
+        }
+
+        System.out.println("\n--- DANH SÁCH ĐƠN HÀNG CỦA BẠN ---");
+        Orders.getHeader();
+        activeOrders.forEach(Orders::displayData);
+        Orders.getFooter();
+
+        int selectedOrderId = InputMethod.getInputInt("Nhập Mã ID Đơn hàng để tiếp tục (ID ở cột đầu tiên): ");
+
+        // Kiểm tra xem ID người dùng nhập có nằm trong danh sách đơn hàng của họ không
+        boolean isValid = activeOrders.stream().anyMatch(o -> o.getId() == selectedOrderId);
+
+        if (!isValid) {
+            System.out.println(ColorConstants.ERROR + "ID không hợp lệ hoặc không phải đơn hàng của bạn!" + ColorConstants.RESET);
+            return 0;
+        }
+
         List<MenuItems> cart = new ArrayList<>();
-        List<MenuItems> availableMenu = customerService.getAllAvailableFood();
-        customerService.displayPagination(availableMenu);
+        // Hiển thị danh sách món ăn để chọn
+        List<MenuItems> allFood = customerService.getAllAvailableFood();
+        customerService.displayPagination(allFood);
 
         while (true) {
-            int foodId = InputMethod.getInputInt("Nhập ID món ăn muốn gọi (0 để dừng chọn): ");
+            int foodId = InputMethod.getInputInt("Nhập ID món ăn (0 để dừng chọn): ");
             if (foodId == 0) break;
 
-            MenuItems food = foodService.findById(foodId);
-            if (food == null || food.getStock() <= 0) {
-                System.out.println(ColorConstants.ERROR + "Món ăn không tồn tại hoặc đã hết hàng!" + ColorConstants.RESET);
+            MenuItems foodOriginal = foodService.findById(foodId);
+            if (foodOriginal == null || foodOriginal.getStock() <= 0) {
+                System.out.println(ColorConstants.ERROR + "Món không tồn tại hoặc đã hết hàng!");
                 continue;
             }
 
-            int quantity = InputMethod.getInputInt("Nhập số lượng cho món [" + food.getFood_name() + "] (Còn " + food.getStock() + "): ");
-
-            if (quantity <= 0) {
-                System.out.println(ColorConstants.ERROR + "Số lượng phải lớn hơn 0!" + ColorConstants.RESET);
+            int quantity = InputMethod.getInputInt("Số lượng đặt [" + foodOriginal.getFood_name() + "]: ");
+            if (quantity <= 0 || quantity > foodOriginal.getStock()) {
+                System.out.println(ColorConstants.ERROR + "Số lượng không hợp lệ hoặc vượt quá kho!");
                 continue;
             }
 
-            if (quantity > food.getStock()) {
-                System.out.println(ColorConstants.ERROR + "Số lượng trong kho không đủ!" + ColorConstants.RESET);
-                continue;
-            }
+            // Tạo bản sao món ăn để cho vào giỏ hàng (tránh ghi đè stock gốc trong list)
+            MenuItems itemInCart = new MenuItems();
+            itemInCart.setFood_id(foodOriginal.getFood_id());
+            itemInCart.setFood_name(foodOriginal.getFood_name());
+            itemInCart.setPrice(foodOriginal.getPrice());
+            itemInCart.setStock(quantity); // Ở đây stock đóng vai trò là số lượng đặt
 
+            cart.add(itemInCart);
 
-            food.setStock(quantity);
-            cart.add(food);
-            System.out.println(ColorConstants.SUCCESS + "Đã thêm " + quantity + " " + food.getFood_name() + " vào danh sách chờ." + ColorConstants.RESET);
-
-            String cont = InputMethod.getInputString("Tiếp tục chọn món? (Y/N): ");
+            String cont = InputMethod.getInputString("Tiếp tục chọn món khác? (Y/N): ");
             if (cont.equalsIgnoreCase("N")) break;
         }
 
         if (!cart.isEmpty()) {
-            System.out.println("\n--- XÁC NHẬN ĐƠN HÀNG ---");
-            for (MenuItems item : cart) {
-                System.out.printf("- %-20s x %d\n", item.getFood_name(), item.getStock());
-            }
+            System.out.println("\n--- XÁC NHẬN GỬI BẾP ---");
+            cart.forEach(i -> System.out.printf("- %-20s x %d\n", i.getFood_name(), i.getStock()));
 
-            boolean confirm = InputMethod.getInputBoolean("Xác nhận gửi yêu cầu đến bếp? (true/false): ");
-            if (confirm) {
-                boolean success = customerService.placeOrder(currentOrder, cart);
-                if (success) {
-                    System.out.println(ColorConstants.SUCCESS + "Gọi món thành công! Vui lòng chờ trong giây lát." + ColorConstants.RESET);
+            if (InputMethod.getInputBoolean("Xác nhận gửi yêu cầu? (true/false): ")) {
+                if (customerService.placeOrder(selectedOrderId, cart)) {
+                    System.out.println(ColorConstants.SUCCESS + "Yêu cầu đã được gửi đến nhà bếp!" + ColorConstants.RESET);
+                    return selectedOrderId;
                 }
             }
-        } else {
-            System.out.println("Bạn chưa chọn món ăn nào.");
         }
+        return selectedOrderId;
     }
 }

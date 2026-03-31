@@ -43,7 +43,7 @@ public class InputMethod {
     }
 
     public static boolean getInputBoolean(String message) {
-        System.out.print(message + " (y/n hoặc true/false): ");
+        System.out.println(message);
         while (true) {
             String input = sc.nextLine().trim().toLowerCase();
             if (input.equals("true") || input.equals("t") || input.equals("y") || input.equals("yes")) {

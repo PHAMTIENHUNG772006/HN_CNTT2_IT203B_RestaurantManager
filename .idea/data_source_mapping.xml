@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/9492bf60-3534-4672-a5c2-66c6c89bcf5e/console.sql" value="9492bf60-3534-4672-a5c2-66c6c89bcf5e" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/68847444-a496-4a11-bb59-41ed1a66d4d1/console.sql" value="68847444-a496-4a11-bb59-41ed1a66d4d1" />
+    <file url="file://$PROJECT_DIR$/src/script.sql" value="68847444-a496-4a11-bb59-41ed1a66d4d1" />
   </component>
 </project>

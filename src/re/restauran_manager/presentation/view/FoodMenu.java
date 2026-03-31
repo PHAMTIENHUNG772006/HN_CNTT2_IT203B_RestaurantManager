@@ -6,7 +6,7 @@ import re.restauran_manager.model.enties.MenuItems;
 import re.restauran_manager.utils.ColorConstants;
 import re.restauran_manager.utils.InputMethod;
 
-import java.util.Scanner;
+import java.util.List;
 
 public class FoodMenu {
     public static void viewMenuFood() {
@@ -28,7 +28,7 @@ public class FoodMenu {
 
             switch (choice) {
                 case 1:
-                    foodService.displayAll();
+                    foodService.displayPagination(foodService.displayAll());
                     break;
                 case 2:
                     MenuItems items = MenuItems.inputData();
@@ -39,6 +39,8 @@ public class FoodMenu {
                     }
                     break;
                 case 3:
+                    foodService.displayPagination(foodService.displayAll());
+
                     System.out.println("+===========================================+");
                     System.out.println("|           CHỌN LOẠI CẬP NHẬT              |");
                     System.out.println("+===========================================+");
@@ -48,40 +50,47 @@ public class FoodMenu {
                     System.out.println("+-------------------------------------------+");
 
                     int updateChoice = InputMethod.getInputInt("Lựa chọn của bạn: ");
+
                     if (updateChoice == 1) {
-                        String name = InputMethod.getInputString("Nhập tên món ăn cần cập nhật kho: ").trim();
+                        int id = InputMethod.getInputInt("Nhập ID món ăn cần cập nhật kho: ");
                         int stock = InputMethod.getInputInt("Nhập số lượng tồn kho mới: ");
-                        if (foodService.updateStock(name, stock)) {
+                        if (foodService.updateStock(id, stock)) {
                             System.out.println(ColorConstants.SUCCESS + "Cập nhật kho thành công!" + ColorConstants.RESET);
                         } else {
-                            System.out.println(ColorConstants.ERROR + "Không tìm thấy món ăn: " + name + ColorConstants.RESET);
+                            System.out.println(ColorConstants.ERROR + "Thao tác thất bại!" + ColorConstants.RESET);
                         }
                     } else if (updateChoice == 2) {
-                        String name = InputMethod.getInputString("Nhập tên món ăn cần cập nhật giá: ").trim();
+                        int id = InputMethod.getInputInt("Nhập ID món ăn cần cập nhật giá: ");
                         double price = InputMethod.getInputDouble("Nhập giá mới: ");
-                        if (foodService.updatePrice(name, price)) {
+                        if (foodService.updatePrice(id, price)) {
                             System.out.println(ColorConstants.SUCCESS + "Cập nhật giá thành công!" + ColorConstants.RESET);
                         } else {
-                            System.out.println(ColorConstants.WARNING + "Không tìm thấy món ăn: " + name + ColorConstants.RESET);
+                            System.out.println(ColorConstants.ERROR + "Thao tác thất bại!" + ColorConstants.RESET);
                         }
                     }
                     break;
                 case 4:
-                    String nameDel = InputMethod.getInputString("Nhập tên món ăn cần xóa: ");
-                    if (foodService.delete(nameDel.trim())) {
+                    foodService.displayPagination(foodService.displayAll());
+                    int idDel = InputMethod.getInputInt("Nhập ID món ăn cần xóa: ");
+                    if (foodService.delete(idDel)) {
                         System.out.println(ColorConstants.SUCCESS + "Xóa món ăn thành công!" + ColorConstants.RESET);
                     } else {
-                        System.out.println(ColorConstants.WARNING + "Xóa thất bại. Món ăn không tồn tại!" + ColorConstants.RESET);
+                        System.out.println(ColorConstants.WARNING + "Xóa thất bại!" + ColorConstants.RESET);
                     }
                     break;
                 case 5:
                     String findFood = InputMethod.getInputString("Nhập tên món ăn cần tìm: ");
-                    MenuItems itemsFound = foodService.findByName(findFood);
-                    if (itemsFound != null) {
+                    List<MenuItems> foods = foodService.findByName(findFood);
+
+                    if (foods == null){
+                        return;
+                    }else {
                         System.out.println(ColorConstants.SUCCESS + "Món ăn được tìm thấy:" + ColorConstants.RESET);
-                        itemsFound.displayData();
-                    } else {
-                        System.out.println(ColorConstants.WARNING + "Không tìm thấy món ăn: " + findFood + ColorConstants.RESET);
+                        MenuItems.getHeader();
+                       for (MenuItems item : foods){
+                           item.displayData();
+                       }
+                        MenuItems.getFooter();
                     }
                     break;
                 case 6:

@@ -2,8 +2,8 @@ package re.restauran_manager.business.service.Impl;
 
 import re.restauran_manager.business.dao.CustomerDao;
 import re.restauran_manager.business.service.IService.ICustomerService;
-import re.restauran_manager.model.enties.MenuItems;
-import re.restauran_manager.model.enties.Table;
+import re.restauran_manager.model.enties.*;
+import re.restauran_manager.model.enums.OrderDetailStatus;
 import re.restauran_manager.utils.AccountSession;
 import re.restauran_manager.utils.ColorConstants;
 import re.restauran_manager.utils.InputMethod;
@@ -12,13 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ICustomerServiceImpl implements ICustomerService {
-    CustomerDao customerDao = CustomerDao.getInstance();
+
+    private final CustomerDao customerDao = CustomerDao.getInstance();
     private static ICustomerServiceImpl instance;
 
-    private ICustomerServiceImpl() {
-    }
+    private ICustomerServiceImpl() {}
 
-    public static ICustomerServiceImpl getInstance() {
+
+    public static synchronized ICustomerServiceImpl getInstance() {
         if (instance == null) {
             instance = new ICustomerServiceImpl();
         }
@@ -29,46 +30,32 @@ public class ICustomerServiceImpl implements ICustomerService {
     @Override
     public List<MenuItems> getAllAvailableFood() {
         List<MenuItems> foods = customerDao.getAllAvailableFood();
-
         if (foods == null || foods.isEmpty()) {
-            System.out.println(ColorConstants.WARNING + "Hiện tại nhà hàng chưa phục vụ" + ColorConstants.RESET);
+            System.out.println(ColorConstants.WARNING + "Hiện tại nhà hàng chưa phục vụ món nào!" + ColorConstants.RESET);
             return new ArrayList<>();
         }
         return foods;
     }
 
     @Override
-    public List<Table> getFreeTables() {
-        List<Table> freeTables = customerDao.listTableFree();
-
-        if (freeTables == null || freeTables.isEmpty()) {
-            System.out.println(ColorConstants.WARNING + "Hiện tại không có bàn nào còn trống!" + ColorConstants.RESET);
-            return new ArrayList<>();
-        }
-
-        return freeTables;
-    }
-
-    @Override
     public void displayPagination(List<MenuItems> listFood) {
-
-        if (listFood.isEmpty()) {
-            System.out.println(ColorConstants.WARNING + "Danh món ăn đang trống!" + ColorConstants.RESET);
+        if (listFood == null || listFood.isEmpty()) {
+            System.out.println(ColorConstants.WARNING + "Danh sách món ăn đang trống!" + ColorConstants.RESET);
             return;
         }
 
-        int pageSize = 5; // Hiển thị 2 sinh viên/trang để dễ test với 5 dữ liệu mẫu
-        int totalPages = (int) Math.ceil((double) listFood.size() / pageSize);
+        int pageSize = 5;
         int currentPage = 1;
 
         while (true) {
-            // Cập nhật lại tổng số trang phòng trường hợp danh sách bị thay đổi ở thread khác (tuy ít xảy ra ở console app này)
-            totalPages = (int) Math.ceil((double) listFood.size() / pageSize);
+            int totalPages = (int) Math.ceil((double) listFood.size() / pageSize);
             if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
 
-            System.out.println(ColorConstants.SUCCESS + "\n--- HIỂN THỊ DANH SÁCH (TRANG " + currentPage + "/" + totalPages + ") ---" + ColorConstants.RESET);
+            System.out.println(ColorConstants.SUCCESS + "\n--- MENU NHÀ HÀNG (TRANG " + currentPage + "/" + totalPages + ") ---" + ColorConstants.RESET);
+
+
             MenuItems.getHeader();
-
             int startIndex = (currentPage - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, listFood.size());
 
@@ -77,88 +64,172 @@ public class ICustomerServiceImpl implements ICustomerService {
             }
             MenuItems.getFooter();
 
-            System.out.println("Tùy chọn: [N] Next | [P] Prev | [S] Chọn trang | [E] Thoát");
+            System.out.println("Tùy chọn: [N] Tiếp | [P] Trước | [S] Chọn trang | [E] Thoát");
             String choice = InputMethod.getInputString("Nhập lựa chọn của bạn: ").toUpperCase();
 
-            switch (choice) {
-                case "N":
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                    } else {
-                        System.out.println(ColorConstants.WARNING + "Bạn đang ở trang cuối cùng!" + ColorConstants.RESET);
-                    }
-                    break;
-                case "P":
-                    if (currentPage > 1) {
-                        currentPage--;
-                    } else {
-                        System.out.println(ColorConstants.WARNING + "Bạn đang ở trang đầu tiên!" + ColorConstants.RESET);
-                    }
-                    break;
-                case "S":
-                    int targetPage = InputMethod.getInputInt("Nhập số trang muốn đến (1 - " + totalPages + "): ");
-                    if (targetPage >= 1 && targetPage <= totalPages) {
-                        currentPage = targetPage;
-                    } else {
-                        System.out.println(ColorConstants.WARNING + "Số trang không hợp lệ!" + ColorConstants.RESET);
-                    }
-                    break;
-                case "E":
-                    System.out.println(ColorConstants.SUCCESS + "Đã thoát chế độ phân trang." + ColorConstants.RESET);
-                    return;
-                default:
-                    System.out.println(ColorConstants.ERROR + "Lựa chọn không hợp lệ, vui lòng nhập N, P, S hoặc E." + ColorConstants.RESET);
+            if (choice.equals("N") && currentPage < totalPages) currentPage++;
+            else if (choice.equals("P") && currentPage > 1) currentPage--;
+            else if (choice.equals("S")) {
+                int targetPage = InputMethod.getInputInt("Nhập số trang (1 - " + totalPages + "): ");
+                if (targetPage >= 1 && targetPage <= totalPages) currentPage = targetPage;
+                else System.out.println(ColorConstants.WARNING + "Số trang không hợp lệ!" + ColorConstants.RESET);
             }
+            else if (choice.equals("E")) break;
+            else System.out.println(ColorConstants.ERROR + "Lựa chọn không hợp lệ hoặc đã hết trang!" + ColorConstants.RESET);
         }
     }
 
+    // ================= TABLE =================
+    @Override
+    public List<Table> getFreeTables() {
+        List<Table> freeTables = customerDao.listTableFree();
+        if (freeTables == null || freeTables.isEmpty()) {
+            System.out.println(ColorConstants.WARNING + "Hiện tại không có bàn nào còn trống!" + ColorConstants.RESET);
+            return new ArrayList<>();
+        }
+        return freeTables;
+    }
 
     @Override
     public boolean selectTable(int accountId, int tableId) {
-
         if (tableId <= 0) {
             System.out.println(ColorConstants.ERROR + "ID bàn không hợp lệ!" + ColorConstants.RESET);
             return false;
         }
 
+        List<Table> freeTables = customerDao.listTableFree();
+        boolean exists = freeTables.stream().anyMatch(t -> t.getTable_id() == tableId);
+
+        if (!exists) {
+            System.out.println(ColorConstants.ERROR + "Bàn không hợp lệ hoặc đã có người!" + ColorConstants.RESET);
+            return false;
+        }
+
         int orderId = customerDao.createOrder(accountId, tableId);
-
         if (orderId != -1) {
-            AccountSession currentAccount =  AccountSession.getInstance();
-            currentAccount.setCurrentOrder(orderId);
-            System.out.println(ColorConstants.SUCCESS + "Đã mở hóa đơn mới (ID: " + orderId + ") cho bàn " + tableId + ColorConstants.RESET);
+            AccountSession.getInstance().setCurrentOrder(orderId);
+            System.out.println(ColorConstants.SUCCESS + "Mở order thành công ID: " + orderId + ColorConstants.RESET);
             return true;
-        } else {
-            return false;
         }
-    }
-
-    @Override
-    public boolean placeOrder(int order_id, List<MenuItems> foods) {
-        if (order_id <= 0 ){
-            System.out.println(ColorConstants.WARNING + "ID order không hợp kệ" + ColorConstants.RESET);
-            return false;
-        }
-
-        if (foods.isEmpty()){
-            System.out.println(ColorConstants.WARNING + "Danh sách truyền vào rỗng" + ColorConstants.RESET);
-            return false;
-        }
-
-        customerDao.insertFood(order_id,foods);
         return false;
     }
 
+    // ================= ORDER =================
     @Override
-    public void trackOrderStatus(int order_id) {
+    public boolean placeOrder(int orderId, List<MenuItems> foods) {
+        if (orderId <= 0 || foods == null || foods.isEmpty()) {
+            System.out.println(ColorConstants.WARNING + "Dữ liệu đặt món không hợp lệ!" + ColorConstants.RESET);
+            return false;
+        }
 
+        // Lưu ý: Trong cart, bạn dùng getStock() để lưu số lượng khách đặt
+        for (MenuItems item : foods) {
+            if (item.getStock() <= 0) {
+                System.out.println(ColorConstants.ERROR + "Số lượng món đặt phải > 0!" + ColorConstants.RESET);
+                return false;
+            }
+        }
+
+        boolean result = customerDao.addListFoodToOrder(orderId, foods);
+        if (result) {
+            System.out.println(ColorConstants.SUCCESS + "Đặt món thành công!" + ColorConstants.RESET);
+        } else {
+            System.out.println(ColorConstants.ERROR + "Đặt món thất bại!" + ColorConstants.RESET);
+        }
+        return result;
     }
 
     @Override
-    public double checkout(int accountId, int tableId) {
-        return 0;
+    public List<Orders> getActiveOrders(int account_id) {
+        return customerDao.getActiveOrders(account_id);
     }
 
+    // ================= TRACK =================
+    @Override
+    public void trackOrderStatus(int orderId) {
+        if (orderId <= 0) {
+            System.out.println(ColorConstants.WARNING + "Bạn chưa chọn đơn hàng để theo dõi!" + ColorConstants.RESET);
+            return;
+        }
 
+        List<OrderDetailDisplay> details = customerDao.getCurrentOrderDetails(orderId);
+        if (details == null || details.isEmpty()) {
+            System.out.println(ColorConstants.WARNING + "Đơn hàng này chưa có món nào!" + ColorConstants.RESET);
+            return;
+        }
 
+        OrderDetailDisplay.getHeader();
+        for (OrderDetailDisplay d : details) {
+            d.display();
+        }
+        OrderDetailDisplay.getFooter();
+    }
+
+    // ================= CHECKOUT =================
+    @Override
+    public double checkout(int orderId, int tableId) {
+
+        if (orderId <= 0 || tableId <= 0) {
+            System.out.println(ColorConstants.ERROR + "Thông tin thanh toán không hợp lệ (ID Bàn hoặc Đơn hàng trống)!" + ColorConstants.RESET);
+            return -1;
+        }
+
+        int count = customerDao.countUnfinishedDishes(orderId);
+        boolean shouldCancel = false;
+
+        if (count > 0) {
+            System.out.println(ColorConstants.WARNING + "Có " + count + " món chưa phục vụ xong!" + ColorConstants.RESET);
+            String choice = InputMethod.getInputString("Nhập 'Y' để hủy các món này và thanh toán luôn: ");
+            if (choice.equalsIgnoreCase("Y")) {
+                shouldCancel = true;
+            } else {
+                return -2;
+            }
+        }
+
+        double total = customerDao.processCheckout(tableId, orderId, shouldCancel);
+
+        if (total >= 0) {
+            System.out.println(ColorConstants.SUCCESS + "Thanh toán thành công. Tổng tiền: " + total + " VND" + ColorConstants.RESET);
+            AccountSession.getInstance().setCurrentOrder(0);
+        } else {
+            System.out.println(ColorConstants.ERROR + "Lỗi hệ thống: Thanh toán thất bại!" + ColorConstants.RESET);
+        }
+
+        return total;
+    }
+
+    // ================= CANCEL =================
+    @Override
+    public boolean cancelFood(int orderId, int foodId, int quantity) {
+        if (orderId <= 0 || foodId <= 0 || quantity <= 0) {
+            System.out.println(ColorConstants.WARNING + "Thông tin không hợp lệ!" + ColorConstants.RESET);
+            return false;
+        }
+
+        OrderDetails detail = customerDao.findOrderDetail(orderId, foodId);
+
+        if (detail == null) {
+            System.out.println(ColorConstants.ERROR + "Không tìm thấy món này trong hóa đơn!" + ColorConstants.RESET);
+            return false;
+        }
+
+        if (detail.getStatus() != OrderDetailStatus.PENDING) {
+            System.out.println(ColorConstants.ERROR + "Món đang được chế biến, không thể hủy!" + ColorConstants.RESET);
+            return false;
+        }
+
+        if (quantity > detail.getQuantity()) {
+            System.out.println(ColorConstants.ERROR + "Số lượng hủy lớn hơn số lượng đã đặt!" + ColorConstants.RESET);
+            return false;
+        }
+
+        boolean result = customerDao.cancelFood(orderId, foodId, quantity);
+        if (result) {
+            System.out.println(ColorConstants.SUCCESS + "Hủy món thành công!" + ColorConstants.RESET);
+        } else {
+            System.out.println(ColorConstants.ERROR + "Hủy món thất bại!" + ColorConstants.RESET);
+        }
+        return result;
+    }
 }

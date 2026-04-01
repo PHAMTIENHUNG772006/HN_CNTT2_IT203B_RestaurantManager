@@ -88,10 +88,9 @@ public class TableMenu {
             case 2:
                 System.out.println("Chọn trạng thái mới:");
                 System.out.println("1. FREE (Trống)");
-                System.out.println("2. OCCUPIED (Có khách)");
-                System.out.println("3. RESERVED (Đã đặt)");
-                System.out.println("4. DAMAGED (Hỏng)");
-                int statusSelect = InputMethod.getInputInt("Nhập lựa chọn (1-4): ");
+                System.out.println("2. RESERVED (Đã đặt)");
+                System.out.println("3. DAMAGED (Hỏng)");
+                int statusSelect = InputMethod.getInputInt("Nhập lựa chọn (1-3): ");
                 if (tableService.updateStatus(id, statusSelect)) {
                     System.out.println(ColorConstants.SUCCESS + "Cập nhật trạng thái thành công!" + ColorConstants.RESET);
                 }

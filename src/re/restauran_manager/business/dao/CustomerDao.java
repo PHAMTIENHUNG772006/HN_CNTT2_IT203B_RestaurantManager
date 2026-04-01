@@ -48,36 +48,6 @@ public class CustomerDao {
         return foods;
     }
 
-    // ================= ORDER =================
-    public Orders findOrder(int id) {
-        String sql = "SELECT order_id, table_id, order_date, status, user_id FROM Orders WHERE order_id = ?";
-        try (Connection conn = DB_Connection.openConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
-
-            pre.setInt(1, id);
-            try (ResultSet rs = pre.executeQuery()) {
-                if (rs.next()) {
-                    Orders order = new Orders();
-                    order.setId(rs.getInt("order_id"));
-                    order.setTableId(rs.getInt("table_id"));
-                    order.setUserId(rs.getInt("user_id"));
-
-                    if (rs.getTimestamp("order_date") != null)
-                        order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
-
-                    String statusStr = rs.getString("status");
-                    if (statusStr != null)
-                        order.setStatus(OrderStatus.valueOf(statusStr.toUpperCase()));
-
-                    return order;
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println(ColorConstants.ERROR + "Lỗi tìm đơn: " + e.getMessage() + ColorConstants.RESET);
-        }
-        return null;
-    }
-
     public List<Orders> getActiveOrders(int account_id) {
         List<Orders> list = new ArrayList<>();
         String sql = "SELECT order_id, table_id, order_date, status, user_id FROM Orders " +
@@ -349,8 +319,6 @@ public class CustomerDao {
         return null;
     }
 
-    // ================= REFACTORED CHECKOUT =================
-
     public double processCheckout(int tableId, int orderId, boolean cancelUnfinished) {
         Connection conn = null;
         double totalAmount = 0;
@@ -359,20 +327,16 @@ public class CustomerDao {
             if (conn == null) return -1;
             conn.setAutoCommit(false);
 
-            // 1. Nếu khách muốn thanh toán luôn, hoàn lại các món chưa nấu vào kho
             if (cancelUnfinished) {
                 handleUnfinishedItems(conn, orderId);
             }
 
-            // 2. Tính tiền các món thực tế khách đã ăn/đang nấu
             totalAmount = calculateAndPrintInvoice(conn, orderId);
 
-            // 3. Cập nhật trạng thái bàn thành FREE và đơn hàng thành PAID
-            // (Giả sử hàm finalizeCheckout của bạn đã xử lý việc này)
+
             finalizeCheckout(conn, tableId, orderId, totalAmount);
 
             conn.commit();
-            // Ghi chú: Không in "Thanh toán thành công" ở đây để tránh lặp với lớp View
             return totalAmount;
         } catch (Exception e) {
             if (conn != null) {
@@ -386,7 +350,6 @@ public class CustomerDao {
     }
 
     private void handleUnfinishedItems(Connection conn, int orderId) {
-        // 1. Lấy danh sách món để hoàn stock
         String sqlGet = "SELECT food_id, quantity FROM Order_Details WHERE order_id = ? " +
                 "AND status IN ('WAITING_APPROVAL', 'PENDING')";
         String sqlRestore = "UPDATE Menu_items SET stock = stock + ? WHERE food_id = ?";
@@ -416,13 +379,11 @@ public class CustomerDao {
                 }
             }
 
-            // 2. Chuyển trạng thái sang CANCEL
             try (PreparedStatement psCan = conn.prepareStatement(sqlCancel)) {
                 psCan.setInt(1, orderId);
                 psCan.executeUpdate();
             }
 
-            // Trả lại trạng thái autoCommit ban đầu cho Connection
             conn.setAutoCommit(originalAutoCommit);
 
         } catch (SQLException e) {
@@ -432,7 +393,8 @@ public class CustomerDao {
 
     private double calculateAndPrintInvoice(Connection conn, int orderId) {
         String sql = "SELECT m.food_name, od.quantity, od.unit_price, od.status, (od.quantity * od.unit_price) as sub_total " +
-                "FROM Order_Details od JOIN Menu_items m ON od.food_id = m.food_id " +
+                "FROM Order_Details od" +
+                " JOIN Menu_items m ON od.food_id = m.food_id " +
                 "WHERE od.order_id = ? AND od.status IN ('COOKING', 'READY', 'SERVED')";
 
         double total = 0;
@@ -444,7 +406,7 @@ public class CustomerDao {
                 while (rs.next()) {
                     double sub = rs.getDouble("sub_total");
                     total += sub;
-                    sb.append(String.format("| %-20s | %-5d | %-12.0f | %-15s | %-12.0f |\n",
+                    sb.append(String.format("| %-20s | %-5d | %-12.0f | %-15s | %-12.2f |\n",
                             rs.getString("food_name"), rs.getInt("quantity"),
                             rs.getDouble("unit_price"), rs.getString("status"), sub));
                 }
@@ -455,6 +417,7 @@ public class CustomerDao {
                 System.out.printf("| %-20s | %-5s | %-12s | %-15s | %-12s |\n", "Tên món", "SL", "Đơn giá", "Trạng thái", "Thành tiền");
                 System.out.println("+----------------------------------------------------------+");
                 System.out.print(sb.toString());
+                System.out.printf("| %-59s | %-12.2f |\n", "Tổng tiền đơn hàng:", total);
                 System.out.println("+==========================================================+");
             } else {
                 System.out.println(ColorConstants.WARNING + "[Thông báo] Không có món ăn nào đã được phục vụ để tính tiền." + ColorConstants.RESET);
@@ -466,7 +429,7 @@ public class CustomerDao {
         return total;
     }
 
-    private void finalizeCheckout(Connection conn, int tableId, int orderId, double total) throws SQLException {
+    private void finalizeCheckout(Connection conn, int tableId, int orderId, double total) {
         String sqlUpdateOrder = "UPDATE Orders SET total_amount = ?, status = 'PAID' WHERE order_id = ?";
         String sqlFreeTable = "UPDATE Tables SET status = 'FREE' WHERE table_id = ?";
 
@@ -478,6 +441,8 @@ public class CustomerDao {
 
             ps2.setInt(1, tableId);
             ps2.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(ColorConstants.ERROR + "Lỗi cập nhật trạng thái bàn và order: " + e.getMessage() + ColorConstants.RESET);
         }
     }
 

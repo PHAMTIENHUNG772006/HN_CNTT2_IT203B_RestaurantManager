@@ -61,5 +61,4 @@ public class DB_Connection {
         Connection conn = openConnection();
         initDB("src/script.sql");
     }
-
 }

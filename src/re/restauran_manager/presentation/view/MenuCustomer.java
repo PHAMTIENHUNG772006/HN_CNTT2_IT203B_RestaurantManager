@@ -35,7 +35,7 @@ public class MenuCustomer {
             System.out.println("|  4. Hủy món                               |");
             System.out.println("|  5. Theo dõi trạng thái món ăn            |");
             System.out.println("|  6. Thanh toán hóa đơn                    |");
-            System.out.println("|  7. Thoát                                 |");
+            System.out.println("|  7. Đăng xuất                             |");
             System.out.println("+-------------------------------------------+");
 
             choice = InputMethod.getInputInt("Nhập lựa chọn : ");
@@ -99,7 +99,7 @@ public class MenuCustomer {
                     }
                     break;
                 case 7:
-                    System.out.println("Đã quay lại menu chính.");
+                    System.out.println("Đã đăng xuất");
                     break;
                 default:
                     System.out.println(ColorConstants.WARNING + "Lựa chọn không hợp lệ." + ColorConstants.RESET);
@@ -144,7 +144,7 @@ public class MenuCustomer {
 
         int selectedOrderId = InputMethod.getInputInt("Nhập Mã ID Đơn hàng để tiếp tục (ID ở cột đầu tiên): ");
 
-        // Kiểm tra xem ID người dùng nhập có nằm trong danh sách đơn hàng của họ không
+
         boolean isValid = activeOrders.stream().anyMatch(o -> o.getId() == selectedOrderId);
 
         if (!isValid) {
@@ -172,12 +172,12 @@ public class MenuCustomer {
                 continue;
             }
 
-            // Tạo bản sao món ăn để cho vào giỏ hàng (tránh ghi đè stock gốc trong list)
+
             MenuItems itemInCart = new MenuItems();
             itemInCart.setFood_id(foodOriginal.getFood_id());
             itemInCart.setFood_name(foodOriginal.getFood_name());
             itemInCart.setPrice(foodOriginal.getPrice());
-            itemInCart.setStock(quantity); // Ở đây stock đóng vai trò là số lượng đặt
+            itemInCart.setStock(quantity);
 
             cart.add(itemInCart);
 

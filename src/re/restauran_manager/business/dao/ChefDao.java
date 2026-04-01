@@ -83,7 +83,6 @@ public class ChefDao {
                 item.setTableId(rs.getInt("table_id"));
                 item.setFoodName(rs.getString("food_name"));
 
-                // QUAN TRỌNG: Lấy từ alias "total_qty"
                 item.setQuantity(rs.getInt("total_qty"));
 
                 String statusStr = rs.getString("status");

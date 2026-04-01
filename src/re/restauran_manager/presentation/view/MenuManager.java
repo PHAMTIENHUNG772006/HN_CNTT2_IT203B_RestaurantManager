@@ -17,7 +17,7 @@ public class MenuManager {
             System.out.println("|  3. Quản lý tài khoản                     |");
             System.out.println("|  4. Duyệt món ăn                          |");
             System.out.println("|  5. Thống kê và báo cáo                   |");
-            System.out.println("|  6. Thoát                                 |");
+            System.out.println("|  6. Đăng xuất                             |");
             System.out.println("+-------------------------------------------+");
 
             choice = InputMethod.getInputInt("Nhập lựa chọn : ");
@@ -39,7 +39,7 @@ public class MenuManager {
                     StatisticsMenu.displayMenu();
                     break;
                 case 6:
-                    System.out.println("Đã ra menu ngoài");
+                    System.out.println("Đã đăng xuất");
                     break;
                 default:
                     System.out.println("Lựa chọn sai vui lòng chọn lại..");

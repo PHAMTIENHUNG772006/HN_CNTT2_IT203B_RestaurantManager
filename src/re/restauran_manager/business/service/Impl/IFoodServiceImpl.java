@@ -39,7 +39,7 @@ public class IFoodServiceImpl implements IFoodService {
             System.out.println(ColorConstants.ERROR + "Không tìm thấy món có ID: [" + id + "]" + ColorConstants.RESET);
             return false;
         }
-        return foodDao.deleteById(id); // Gọi hàm deleteById trong DAO
+        return foodDao.deleteById(id);
     }
 
     // --- SỬA LẠI UPDATE STOCK THEO ID ---
@@ -56,7 +56,6 @@ public class IFoodServiceImpl implements IFoodService {
         return foodDao.updateStock(id, stock);
     }
 
-    // --- SỬA LẠI UPDATE PRICE THEO ID ---
     @Override
     public boolean updatePrice(int id, double price) {
         if (price < 0) {

@@ -32,8 +32,9 @@ public class ITableServiceImpl implements ITableService {
 
     @Override
     public boolean deleteTable(int id) {
-        if (tableDao.findById(id) == null) {
-            System.out.println(ColorConstants.ERROR + "Không tìm thấy bàn ID: [" + id + "]" + ColorConstants.RESET);
+        Table table = findById(id);
+        if (table != null && table.getStatus() == TableStatus.OCCUPIED) {
+            System.out.println(ColorConstants.ERROR + "Không thể xóa bàn đang có khách!" + ColorConstants.RESET);
             return false;
         }
         return tableDao.deleteById(id);
@@ -54,12 +55,17 @@ public class ITableServiceImpl implements ITableService {
 
     @Override
     public boolean updateStatus(int id, int choice) {
+        Table table = findById(id);
+        if (table != null && table.getStatus() == TableStatus.OCCUPIED) {
+            System.out.println(ColorConstants.ERROR + "Không thể cập nhật bàn đang có khách!" + ColorConstants.RESET);
+            return false;
+        }
+
         TableStatus status;
         switch (choice) {
             case 1: status = TableStatus.FREE; break;
-            case 2: status = TableStatus.OCCUPIED; break;
-            case 3: status = TableStatus.RESERVED; break;
-            case 4: status = TableStatus.DAMAGED; break;
+            case 2: status = TableStatus.RESERVED; break;
+            case 3: status = TableStatus.DAMAGED; break;
             default:
                 System.out.println(ColorConstants.ERROR + "Lựa chọn không hợp lệ (1-4)." + ColorConstants.RESET);
                 return false;
